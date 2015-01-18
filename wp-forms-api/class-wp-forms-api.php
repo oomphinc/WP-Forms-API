@@ -12,18 +12,45 @@
  **********************************************/
 class WP_Forms_API {
 	/**
+	 * The defaults for all elements
+	 */
+	static $element_defaults = array(
+		// Element type
+		'#type' => null,
+		'#key' => '', 
+		'#slug' => '', 
+		'#name' => '',
+		'#placeholder' => null,
+		'#size' => null,
+		'#options' => array(),
+		'#container' => 'div',
+		'#container_classes' => array(),
+		'#attrs' => array(),
+		'#class' => array(),
+		'#label' => null,
+		'#required' => false,
+		'#index' => null,
+		'#multiple' => null,
+		'#content' => '',
+		'#add_link' => 'Add item',
+		'#remove_link' => 'Remove item',
+		'#tag' => '',
+		'#value' => '',
+	);
+
+	/**
 	 * Return HTML with tag $tagname and keyed attrs $attrs.
 	 *
 	 * If $content is not null, contain with $tagname and 
 	 * render close tag.
 	 *
 	 * If $content === false, just emit an open tag.
-	 *
-	 * Uses filter 'wp_forms_tagname' with $tagname, $attrs
-	 *
-	 * Uses filter 'wp_forms_attrs' with $attrs, $tagname
 	 */
 	static function make_tag( $tagname, $attrs, $content = null ) {
+		if( empty( $tagname ) ) {
+			return;
+		}
+
 		$html = '<' . $tagname;
 
 		foreach( $attrs as $attr => $val ) {
@@ -61,25 +88,12 @@ class WP_Forms_API {
 				continue;
 			}
 
-			$element += array(
-				'#type' => null,
-				'#key' => $key,
-				'#placeholder' => null,
-				'#size' => null,
-				'#options' => array(),
-				'#class' => array(),
-				'#container' => 'div',
-				'#attrs' => array(),
-				'#label' => null,
-				'#required' => false,
-				'#index' => null,
-				'#multiple' => null,
-				'#add_link' => 'Add item',
-				'#remove_link' => 'Remove item',
-				'#slug' => $key,
-				'#name' => $key,
-				'#value' => '',
-			);
+			// Default some properties to $key
+			foreach( array( '#key', '#slug', '#name' ) as $field ) {
+				if( empty( $element[$field] ) ) {
+					$element[$field] = $key;
+				}
+			}
 
 			$elements[$key] = &$element;
 		}
@@ -102,10 +116,7 @@ class WP_Forms_API {
 	 * The ID for this form. Optional.
 	 *
 	 * #attrs
-	 * Form container tag attributes
-	 *
-	 * #tag
-	 * Form container tag
+	 * Form container tag attributes.
 	 *
 	 * Elements are also forms, but a form is not necessarily an element.
 	 * If a member value has a '#type' key, then it is considered an element.
@@ -126,32 +137,29 @@ class WP_Forms_API {
 			$top = $form;
 		}
 
-		$form += array(
-			'#key' => null,
-			'#type' => null,
-			'#id' => null,
-			'#tag' => 'div',
-			'#attrs' => array(),
-			'#slug' => '',
-			'#name' => '',
-		);
+		$form += self::$element_defaults;
 
-		$form['#attrs'] += array(
-			'class' => 'meta-form',
-		);
+		$form['#class'][] = 'wp-form';
 
 		if( $form['#id'] ) {
 			$form['#attrs']['id'] = $form['#id'];
-			$form['#attrs']['class'] .= ' meta-form-' . $form['#id'];
+			$form['#class'][] = 'wp-form-' . $form['#id'];
 		}
 
 		$elements = self::get_elements( $form );
 
+		// No elements = no form
 		if( empty( $elements ) ) {
 			return;
 		}
 
-		echo self::make_tag( $form['#tag'], $form['#attrs'], false );
+		if( isset( $top['#id'] ) ) {
+			$form = apply_filters( 'wp_form_' . $top['#id'], $form );
+		}
+
+		$form['#attrs']['class'] = join( ' ', $form['#class'] );
+
+		echo self::make_tag( $form['#container'], $form['#attrs'], false );
 
 		$value_root = &$values;
 
@@ -175,19 +183,17 @@ class WP_Forms_API {
 				$element['#name'] = $form['#name'] . '[' . $element['#key'] . ']';
 			}
 
-			$element['#class'][] = 'meta-element';
-			$element['#class'][] = 'meta-element-' . $element['#slug'];
+			$element['#class'][] = 'wp-form-element';
+			$element['#class'][] = 'wp-form-element-' . $element['#slug'];
 
 			if( $element['#type'] ) {
-				$element['#class'][] = 'meta-type-' . $element['#type'];
+				$element['#class'][] = 'wp-form-type-' . $element['#type'];
 			}
 
-			echo self::make_tag( 'div', array( 'class' => join( ' ', (array) $element['#class'] ) ), false );
 			self::render_element( $element, $value_root, $top );
-			echo '</div>';
 		}
 
-		echo '</' . $form['#tag'] . '>';
+		echo '</' . $form['#container'] . '>';
 	}
 
 	/**
@@ -239,6 +245,7 @@ class WP_Forms_API {
 	 * #remove_link
 	 * Link text to show to remove an item to this multiple list
 	 *
+	 * #mname
 	 * @param array $values
 	 *
 	 * @param array $form
@@ -259,23 +266,21 @@ class WP_Forms_API {
 			$element['#value'] = $values[$element['#key']];
 		}
 
-		$container_classes = array( 'meta-field', 'meta-field-' . $element['#slug'] );
+		$element['#container_classes'] = array_merge( $element['#container_classes'], array( 'wp-form-element', 'wp-form-element-' . $element['#slug'] ) );
 
 		echo self::make_tag( $element['#container'], array( 'class' => join( ' ', $container_classes ) ), false );
 
-		$input_id = 'meta-element-' . $element['#slug'];
+		$input_id = 'wp-form-' . $element['#slug'];
 
 		if( isset( $element['#label'] ) ) {
 			echo self::make_tag( 'label', array(
-				'class' => 'meta-label',
+				'class' => 'wp-form-label',
 				'for' => $input_id,
 			), esc_html( $element['#label'] ) );
 		}
 
 		if( $element['#type'] ) {
-			if( !$element['#tag'] ) {
-				$element['#tag'] = 'input';
-			}
+			$element['#tag'] = 'input';
 
 			$attrs = &$element['#attrs'];
 			$tag_content = false;
@@ -284,7 +289,7 @@ class WP_Forms_API {
 			$attrs['name'] = $element['#name']; 
 			$attrs['type'] = 'text';
 
-			$element['#class'] = array_merge( array( 'meta-input', 'meta-input-' . $element['#slug'], $element['#class'] ) );
+			$element['#class'] = array_merge( array( 'wp-form-input', 'wp-form-input-' . $element['#slug'], $element['#class'] ) );
 
 			$attrs['value'] = $element['#value'];
 
@@ -294,11 +299,6 @@ class WP_Forms_API {
 
 			if( $element['#size'] ) {
 				$attrs['size'] = $element['#size'];
-			}
-
-			if( $element['#type'] == 'multiple' ) {
-				unset( $element['#tag'] );
-				self::render_multiple_element( $element, $values[$element['#key']] );
 			}
 
 			// Adjust form element attributes based on input type
@@ -314,18 +314,26 @@ class WP_Forms_API {
 				break;
 
 			case 'textarea':
-				$tagname = 'textarea';
+				$element['#tag'] = 'textarea';
 				$tag_content = esc_textarea( $element['#value'] );
 				unset( $attrs['value'] );
+				unset( $attrs['type'] );	
+
+				break;
+
+			case 'multiple':
+				$element['#tag'] = 'div';
+				$element['#content'] .= self::render_multiple_element( $element, $values[$element['#key']] );
 				break;
 
 			case 'composite':
-				unset( $tagname );
+				$element['#tag'] = '';
 				break;
 
 			case 'select':
-				$tagname = 'select';
+				$element['#tag'] = 'select';
 				unset( $attrs['value'] );
+				unset( $attrs['type'] );	
 
 				$options = array();
 
@@ -382,7 +390,7 @@ class WP_Forms_API {
 			'#type' => ''
 		);
 
-		$template_id = 'meta-tmpl-' . $element['#key'];
+		$template_id = 'wp-form-tmpl-' . $element['#key'];
 		$list_id = 'multiple-' . $element['#key'];
 
 		echo '<div class="meta-element-multiple multiple-' . esc_attr( $element['#key'] ) . '" data-template="' . esc_attr( $template_id ) . '" data-list="' . esc_attr( $list_id ) . '">';

@@ -119,7 +119,7 @@ create a corresponding named form input.
 This plugin implements a class `WP_Forms_API` which provides the following static methods:
 
 
-`WP_Forms_API::render_form( $form, &$values, $top = null )`
+#### `WP_Forms_API::render_form( $form, &$values, $top = null )`
 
 Render a form with values. This is the primary rendering function you'll need.
 
@@ -130,14 +130,14 @@ Render a form with values. This is the primary rendering function you'll need.
 `$top` - (optional array) - The top-level form.
 
 
-`WP_Forms_API::render_element( $element, $values, $form = null )` - Render a single element
+#### `WP_Forms_API::render_element( $element, $values, $form = null )` - Render a single element
 
 Renders an element, emitting the appropriate markup.
 
 Applies 'wp_form_element_{$form_id}-{$element_key}' filter to element before rendering.
 
 
-`WP_Forms_API::make_tag( $tagname, $attrs, $content = null )
+#### `WP_Forms_API::make_tag( $tagname, $attrs, $content = null )
 
 Render and emit single HTML tag.
 
@@ -148,7 +148,7 @@ Render and emit single HTML tag.
 `$content` - (string|false) - The content for this tag, if any. If null, then emit a self-closing tag. If `false`, then the tag will not be closed.
 
 
-`WP_Forms_API::get_elements( $form )` - Initialize and return all of the elements of a form.
+#### `WP_Forms_API::get_elements( $form )` - Initialize and return all of the elements of a form.
 
 `$form` - (array) The form to extract elements from.
 
@@ -158,13 +158,98 @@ Use this function to get initialized sub-elements from a form, and skip all the 
 
 All keys in forms are optional.
 
-`#id` The reference ID for this form, for filtering output. When defined, elements
-are run through the filter `wp_form_element_{$form_id}-{$element_key}` before they
-are rendered, so they can be modified, removed, or otherwise.
+#### `#id` (string) The reference ID for this form, for filtering output. When defined, elements are run through the filter `wp_form_element_{$form_id}-{$element_key}` before they are rendered, so they can be modified, removed, or otherwise.
+
+#### `#label` (string) The label for this form or element.
+
+#### `#class` (array) CSS classes in `class` attributes.
+
+#### `#attrs` The attributes to use for the rendered container tag. If `class` key is specified, is it prepended by the classes in `#class`.
+
+#### `#container` (string)
+
+The tag name for the container of this form or element. Defaults to `div`.
+
+#### `#container_classes` (array)
+
+An array of CSS classes to add to the container element.
 
 ### Elements
 
-An element is an associative array with the following special keys:
+An element is an associative array with at least a '#type' key. An element
+can have any of the properties of a form, as well as the following:
 
-`#type` The only valid types for a form is `'composite'`, which aggregates the values
-of all sub-elements into a single value.
+#### `#type` REQUIRED (string)
+
+When present, indicates that the element is an input element. Special values:
+
+Values:
+* `'text'` – Plain text input.
+* `'select'` - A select box. Requires `#options` key.
+* `'checkbox'` - A boolean.
+* `'textarea'` - A textarea.
+* `'multiple'` - A collection of values.
+* `'composite'` - A composite value which is posted as an array in #key.
+* Any other value will be rendered as a text input. You can use custom types along with the '`wp_form_element_{$form_id}_{$key}` filter to define input tag types 
+
+#### `#key` (string)
+
+The key for this element. Is used to create default form element `name`
+attributes and slugs for classes.
+
+#### `#placeholder` (string)
+
+The placeholder to use in the form element. Applies to 'text' and 'textarea' types.
+
+#### `#options` (array)
+
+The options, as given by 'value' => "Label", for this input element. Only applies to select.
+
+#### `#required` (bool)
+
+Whether or not the key is required. (TODO: Currently only affects `'select'`-type elements.)
+
+#### `#name` (string, optional)
+
+The input element name - defaults to `#key`.
+
+#### `#slug` (string, optional)
+
+The CSS element name - defaults to `#key`.
+
+#### `#size` (int)
+
+The size of the element.
+
+#### `#multiple` (array)
+
+Required for `$form['#type'] == 'multiple'`. Define another form whose values are collected into an array for this element.
+
+#### `#add_link` (string)
+
+When using #multiple, the text to show for the "Add Item" button.
+
+#### `#remove_link` (string)
+
+When using #multiple, the text to show for the "Remove Item" button.
+
+#### `#content` (string)
+
+Any content to put in the input tag. Additional content from rendering the tag will be appended to this value if it is provided.
+
+#### `#tag` (string)
+
+The actual tag name to use for the input. Should be changed using `wp_form_element_{$form['#id']}_{$element['#key']}` filter.
+## CSS
+
+The API renders forms with a breadcrumb of sorts in the CSS class name.
+
+Forms get the following classes: `.wp-form`, and if #id is defined, `.wp-form-{$form['#id']}`
+Each element is rendered in a container element of tag `#container` with classes defined in `#container_classes` plus the following: `wp-form-field wp-form-element`.
+
+Each input element is rendered using the tag $element['#tag'] and attributes in $element['#attrs']. These values can be modified per-element using the `wp_form_element_{$form['#id']}_{$element['#key']}` filters. The default classes are `.wp-form-input`, `.wp-form-input-{$element['#slug']}`.
+
+Labels receive the class `.wp-form-label`.
+
+
+
