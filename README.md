@@ -1,4 +1,4 @@
-h1. WP_Forms_API
+# WP_Forms_API
 
 A Drupal-esque API for creating and processing forms in WordPress
 
@@ -6,15 +6,15 @@ Provides a 'WP_Forms_API' class composed of static methods which can be used
 to render forms defined by arbitrary data structures and also process the values
 submitted from those forms into a coherent set of values.
 
-h2. Overview
+## Overview
 
 There are two basic elements:
 
-'forms', which is any associative array.
+'form', which is any associative array.
 
-'elements', which is any associative array with a '#type' and a '#key'
+'element', which is any associative array having at least `#type` and `#key` keys.
 
-h2. Quick Start
+## Quick Start
 
 ```php
 /**
@@ -88,7 +88,7 @@ add_action( 'save_post', function( $post ) use ( $form ) {
 } )
 ```
 
-h2. Why?
+## Why?
 
 Because writing and managing admin forms in WordPress is a real pain in the butt,
 and a data-driven approach is much more flexible. I have not seen any other similar
