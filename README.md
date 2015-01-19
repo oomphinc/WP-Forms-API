@@ -75,7 +75,7 @@ $values = array(
 
 /**
  * You can render the form in whatever context you'd like: Front-end, meta boxes,
- * wherever. Does not containing <form> elements: the form is expected to be
+ * wherever. Does not render containing <form> elements: the form is expected to be
  * defined at this point.
  */
 echo WP_Forms_API::render_form( $form, $values );
