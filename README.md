@@ -12,7 +12,7 @@ Provides a `WP_Forms_API` class composed of static methods which can be used to 
 
 Writing and managing admin forms in WordPress is a real pain in the butt, and a data-driven approach is much more flexible and Drupal-y. WordPress tends to implement forms and other complex markup structures with literal markup templates, but those can be very difficult to manage and update. I have not seen any other similar development projects that brings some of the best ideas from Drupal into WordPress where they can benefit developers and clients alike by providing rapid development tools.
 
-Having forms driven by data sets instead of templates and markup creates a very generic, predictable, and stylizable structure in the rendered form markup, and easy managements and updates to the form structure.
+Having forms driven by data sets instead of templates and markup creates a very generic, predictable, and stylizable structure in the rendered form markup, and easy management and updates to the form structure.
 
 ## Overview
 
