@@ -6,7 +6,7 @@
 
 A Drupal-esque API for creating and processing forms in WordPress
 
-Provides a 'WP_Forms_API' class composed of static methods which can be used to render forms defined by arbitrary data structures. You can also process the results submitted in those forms into a coherent set of values, smoothing over data types, validation (TODO: not yet!!) and allowing for function integration into WordPress.
+Provides a `WP_Forms_API` class composed of static methods which can be used to render forms defined by arbitrary data structures. You can also process the results submitted in those forms into a coherent set of values, smoothing over data types, validation (TODO: not yet!!) and allowing for function integration into WordPress.
 
 ## Why?
 
@@ -173,15 +173,25 @@ The `wp_form_element` filter recieves `$element, $form` as
 
 All keys in forms are optional.
 
-* `#id` (string) The reference ID for this form, for filtering output. When defined, elements are run through the filter `wp_form_element_{$form_id}-{$element_key}` before they are rendered, so they can be modified, removed, or otherwise.
+* `#id` (string)
 
-* `#label` (string) The label for this form or element.
+The reference ID for this form, for filtering output. When defined, elements are run through the filter `wp_form_element_{$form_id}-{$element_key}` before they are rendered, so they can be modified, removed, or otherwise.
 
-* `#class` (array) CSS classes in `class` attributes.
+* `#label` (string)
 
-* `#attrs` The attributes to use for the rendered container tag. If `class` key is specified, is it prepended by the classes in `#class`.
+The label for this form or element.
 
-* `#form` (array) The top-level form. This defaults to the form itself.
+* `#class` (array)
+
+CSS classes in `class` attributes.
+
+* `#attrs` (array)
+
+The attributes to use for the rendered container tag. If `class` key is specified, is it prepended by the classes in `#class`.
+
+* `#form` (array)
+
+The top-level form. This defaults to the form itself.
 
 * `#container` (string)
 
@@ -298,6 +308,17 @@ $form = array(
 Will result in a multi-valued form with inputs named `favorites[0][name]`, `favorites[1][name]`, and so on, for each value submitted. The form will always render at least one empty input. When multiple-valued form elements are used, the script handle `wp-forms` is enqueued, which manages control of adding / removing multiple elements.
 
 In general, the naming should be unimportant to you when using process_form(), but it is important to know how `$values` will be structured `$values` after calling `process_form()`.
+
+### Processing
+
+Use the method `WP_Forms_API::process_form( $form, $values )` to populate $values with named elements defined by $form. By default will use values from `$_POST`, but you can pass an optional third argument to pull element values from.
+
+The filter `wp_form_process` is called with arguments `$form, &$values, &$input` and allows modification of forms or sub-forms before they are rendered. You can access the top-level form in `$form['#form']`
+
+The filter `wp_form_process_element` is called with `$element, &$values, &$input`, and allows modification of individual elements before they are processed. You can access the sub-form that this element is a part of in `$element['#form']`, and the top-level form in `$element['#form']['#form']`.
+
+In each of these filters, `&$values` and `&$input` may refer to sub-arrays of the original `$values` and `$input` arrays. To access the top-level of these structures, access `$form['#form']['#values']` and `$form['#form']['#input']` for forms, and `$element['#form']['#form']['#values']` and `$element['#form']['#form']['#input']` for elements.
+
 
 ## CSS
 

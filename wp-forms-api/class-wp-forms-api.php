@@ -248,16 +248,21 @@ class WP_Forms_API {
 	 * #remove_link
 	 * Link text to show to remove an item to this multiple list
 	 *
-	 * #mname
 	 * @param array $values
+	 *
+	 * The array of values to use to populate input elements.
 	 *
 	 * @param array $form
 	 *
-	 * The top-level form
+	 * The top-level form for this element.
 	 */
 	static function render_element( $element, &$values, $form = null ) {
+		if( !isset( $form ) ) {
+			$form = $element;
+		}
+
 		if( !isset( $element['#form'] ) ) {
-			$element['#form'] = $element;
+			$element['#form'] = $form;
 		}
 
 		// All elements require a key, always.
@@ -460,15 +465,19 @@ class WP_Forms_API {
 
 		if( !isset( $form['#form'] ) ) {
 			$form['#form'] = $form;
+			$form['#values'] = &$values;
+			$form['#input'] = &$input;
 		}
 
 		if( !isset( $input ) ) {
 			$input = &$_POST;
 		}
 
-		$form = apply_filters( 'wp_form_process', $form );
+		$form = apply_filters_ref_array( 'wp_form_process', $form, array( &$values, &$input ) );
 
 		foreach( self::get_elements( $form ) as $key => $element ) {
+			$element['#form'] = $form;
+
 			self::process_element( $element, $values, $input );
 		}
 	}
@@ -518,7 +527,7 @@ class WP_Forms_API {
 			$values[$element['#key']] = $element['#value'];
 		}
 
-		$element = apply_filters( 'wp_form_process_element', $element );
+		$element = apply_filters_ref_array( 'wp_form_process_element', $element, array( &$values, &$input ) );
 
 		self::process_form( $element, $values_root, $input_root );
 	}
