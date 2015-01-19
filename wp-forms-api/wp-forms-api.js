@@ -4,7 +4,7 @@
 (function($) {
 	$(function() {
 		// Set up multiple-list handling
-		$('.wp-form .wp-form-element-multiple').each(function() {
+		$('.wp-form .wp-form-multiple').each(function() {
 			var $container = $(this),
 			  $list = $('#' + $container.data('list')),
 			  $tmpl = $('#' + $container.data('template'));
