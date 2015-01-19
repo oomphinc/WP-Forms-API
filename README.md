@@ -133,7 +133,7 @@ Renders an element, and any sub-forms, returning the rendered markup. You must s
 Applies `wp_form_element` filter to element before rendering.
 
 
-* `WP_Forms_API::make_tag( $tagname, $attrs, $content = null )
+* `WP_Forms_API::make_tag( $tagname, $attrs, $content = null )`
 
 Make and return a single HTML tag.
 
