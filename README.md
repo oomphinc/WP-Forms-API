@@ -4,7 +4,7 @@
   <img width="490" height="275" src="https://github.com/bendoh/WP-Forms-API/raw/master/finally.jpg">
 </p>
 
-A Drupal-esque API for creating and processing forms in WordPress
+*A Drupal-esque API for creating and processing forms in WordPress.*
 
 Provides a `WP_Forms_API` class composed of static methods which can be used to render forms defined by arbitrary data structures. You can also process the results submitted in those forms into a coherent set of values, smoothing over data types, validation (TODO: not yet!!) and allowing for function integration into WordPress.
 
