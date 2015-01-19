@@ -6,7 +6,7 @@
 
 *A Drupal-esque API for creating and processing forms in WordPress.*
 
-Provides a `WP_Forms_API` class composed of static methods which can be used to render forms defined by arbitrary data structures. You can also process the results submitted in those forms into a coherent set of values, smoothing over data types, validation (TODO: not yet!!) and allowing for function integration into WordPress.
+Provides a `WP_Forms_API` class composed of static methods which can be used to render forms defined by arbitrary data structures. You can also process the results submitted in those forms into a coherent set of values, smoothing over data types, validation (TODO: not yet!!) and allowing for functional integration into WordPress using filters.
 
 ## Why?
 
@@ -20,7 +20,7 @@ There are two basic elements:
 
 'form', which is any associative array.
 
-'element', which is any associative array having at least `#type` and `#key` keys.
+'element', a form that has at least `#type` and `#key` keys.
 
 ## Quick Start
 
