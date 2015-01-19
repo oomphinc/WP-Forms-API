@@ -473,7 +473,7 @@ class WP_Forms_API {
 			$input = &$_POST;
 		}
 
-		$form = apply_filters_ref_array( 'wp_form_process', $form, array( &$values, &$input ) );
+		$form = apply_filters_ref_array( 'wp_form_process', array( &$form, &$values, &$input ) );
 
 		foreach( self::get_elements( $form ) as $key => $element ) {
 			$element['#form'] = $form;
@@ -527,7 +527,7 @@ class WP_Forms_API {
 			$values[$element['#key']] = $element['#value'];
 		}
 
-		$element = apply_filters_ref_array( 'wp_form_process_element', $element, array( &$values, &$input ) );
+		$element = apply_filters_ref_array( 'wp_form_process_element', array( &$element, &$values, &$input ) );
 
 		self::process_form( $element, $values_root, $input_root );
 	}
