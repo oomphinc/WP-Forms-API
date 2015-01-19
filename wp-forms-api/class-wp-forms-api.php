@@ -15,7 +15,7 @@ class WP_Forms_API {
 	 * The defaults for all elements
 	 */
 	static $element_defaults = array(
-		// Element type
+		'#id' => '',
 		'#type' => null,
 		'#key' => '', 
 		'#slug' => '', 
@@ -24,19 +24,26 @@ class WP_Forms_API {
 		'#size' => null,
 		'#options' => array(),
 		'#container' => 'div',
-		'#container_classes' => array(),
+		'#container_classes' => array( 'wp-form-element' ),
 		'#attrs' => array(),
 		'#class' => array(),
 		'#label' => null,
 		'#required' => false,
 		'#index' => null,
 		'#multiple' => null,
-		'#content' => '',
+		'#content' => null,
 		'#add_link' => 'Add item',
 		'#remove_link' => 'Remove item',
 		'#tag' => '',
 		'#value' => '',
 	);
+
+	/**
+	 * Initialize this module
+	 */
+	static function init() {
+		wp_register_script( 'wp-forms', plugins_url( 'wp-forms-api.js', 'wp-forms-api' ) );
+	}
 
 	/**
 	 * Return HTML with tag $tagname and keyed attrs $attrs.
@@ -88,6 +95,8 @@ class WP_Forms_API {
 				continue;
 			}
 
+			$element += self::$element_defaults;
+
 			// Default some properties to $key
 			foreach( array( '#key', '#slug', '#name' ) as $field ) {
 				if( empty( $element[$field] ) ) {
@@ -132,9 +141,9 @@ class WP_Forms_API {
 	 *
 	 * Special rules may apply, see below.
 	 */
-	static function render_form( $form, &$values, $top = null ) {
+	static function render_form( $form, &$values, &$top = null ) {
 		if( !$top ) {
-			$top = $form;
+			$top = &$form;
 		}
 
 		$form += self::$element_defaults;
@@ -146,15 +155,17 @@ class WP_Forms_API {
 			$form['#class'][] = 'wp-form-' . $form['#id'];
 		}
 
+		$form = apply_filters( 'wp_form', $form, $top );
+
+		if( isset( $top['#id'] ) ) {
+			$form = apply_filters( 'wp_form_' . $top['#id'], $form );
+		}
+
 		$elements = self::get_elements( $form );
 
 		// No elements = no form
 		if( empty( $elements ) ) {
 			return;
-		}
-
-		if( isset( $top['#id'] ) ) {
-			$form = apply_filters( 'wp_form_' . $top['#id'], $form );
 		}
 
 		$form['#attrs']['class'] = join( ' ', $form['#class'] );
@@ -183,17 +194,12 @@ class WP_Forms_API {
 				$element['#name'] = $form['#name'] . '[' . $element['#key'] . ']';
 			}
 
-			$element['#class'][] = 'wp-form-element';
-			$element['#class'][] = 'wp-form-element-' . $element['#slug'];
-
-			if( $element['#type'] ) {
-				$element['#class'][] = 'wp-form-type-' . $element['#type'];
-			}
-
 			self::render_element( $element, $value_root, $top );
 		}
 
 		echo '</' . $form['#container'] . '>';
+
+		wp_enqueue_script( 'wp-forms' );
 	}
 
 	/**
@@ -266,21 +272,12 @@ class WP_Forms_API {
 			$element['#value'] = $values[$element['#key']];
 		}
 
-		$element['#container_classes'] = array_merge( $element['#container_classes'], array( 'wp-form-element', 'wp-form-element-' . $element['#slug'] ) );
-
-		echo self::make_tag( $element['#container'], array( 'class' => join( ' ', $container_classes ) ), false );
-
 		$input_id = 'wp-form-' . $element['#slug'];
-
-		if( isset( $element['#label'] ) ) {
-			echo self::make_tag( 'label', array(
-				'class' => 'wp-form-label',
-				'for' => $input_id,
-			), esc_html( $element['#label'] ) );
-		}
 
 		if( $element['#type'] ) {
 			$element['#tag'] = 'input';
+			$element['#container_classes'][] = 'wp-form-element-' . $element['#slug'];
+			$element['#class'][] = 'wp-form-type-' . $element['#type'];
 
 			$attrs = &$element['#attrs'];
 			$tag_content = false;
@@ -289,7 +286,7 @@ class WP_Forms_API {
 			$attrs['name'] = $element['#name']; 
 			$attrs['type'] = 'text';
 
-			$element['#class'] = array_merge( array( 'wp-form-input', 'wp-form-input-' . $element['#slug'], $element['#class'] ) );
+			$element['#class'] = array_merge( array( 'wp-form-input', 'wp-form-input-' . $element['#slug'] ), $element['#class'] );
 
 			$attrs['value'] = $element['#value'];
 
@@ -355,13 +352,20 @@ class WP_Forms_API {
 					$element['#content'] .= self::make_tag('option', $option_atts, esc_html( $label ) );
 				}
 			}
-
-			$attrs['class'] = join( ' ', $element['#class'] );
 		}
 
-		if( $form['#id'] ) {
-			$element = apply_filters( 'wp_form_element_' . $form['#id'] . '-' . $element['#key'] );
+		$element = apply_filters( 'wp_form_element', $element, $form );
+
+		echo self::make_tag( $element['#container'], array( 'class' => join( ' ', $element['#container_classes'] ) ), false );
+
+		if( isset( $element['#label'] ) ) {
+			echo self::make_tag( 'label', array(
+				'class' => 'wp-form-label wp-form-label-' . $element['#slug'],
+				'for' => $input_id,
+			), esc_html( $element['#label'] ) );
 		}
+
+		$attrs['class'] = join( ' ', $element['#class'] );
 
 		// Tagname may have been unset (such as in a composite value)
 		if( $element['#tag'] ) {
@@ -381,6 +385,8 @@ class WP_Forms_API {
 			return;
 		}
 
+		$markup = '';
+
 		$multiple = $element['#multiple'];
 
 		$multiple += array(
@@ -393,18 +399,18 @@ class WP_Forms_API {
 		$template_id = 'wp-form-tmpl-' . $element['#key'];
 		$list_id = 'multiple-' . $element['#key'];
 
-		echo '<div class="meta-element-multiple multiple-' . esc_attr( $element['#key'] ) . '" data-template="' . esc_attr( $template_id ) . '" data-list="' . esc_attr( $list_id ) . '">';
+		$markup .= '<div class="meta-element-multiple multiple-' . esc_attr( $element['#key'] ) . '" data-template="' . esc_attr( $template_id ) . '" data-list="' . esc_attr( $list_id ) . '">';
 
 		// First, render a JavaScript template which can be filled out.
 		// JavaScript replaces %INDEX% with the actual index. Indexes are used
 		// to ensure the correct order and grouping when the values come back out in PHP
-		echo '<script type="text/html" id="' . esc_attr( $template_id ) . '">';
+		$markup .= '<script type="text/html" id="' . esc_attr( $template_id ) . '">';
 		$blank_values = array_fill_keys( array_keys( $element ), '' );
 		$multiple['#index'] = '%INDEX%';
-		echo '<li class="meta-multiple-item"><a class="remove-multiple-item">' . esc_html( $element['#remove_link'] ) . '</a>';
+		$markup .= '<li class="meta-multiple-item"><a class="remove-multiple-item">' . esc_html( $element['#remove_link'] ) . '</a>';
 		self::render_form( $multiple, $blank_values );
-		echo '</li>';
-		echo '</script>';
+		$markup .= '</li>';
+		$markup .= '</script>';
 
 		// Show at least one copy always
 		if( empty( $values ) ) {
@@ -412,19 +418,18 @@ class WP_Forms_API {
 		}
 
 		// Now render each item with a remove link and a particular index
-		echo '<ol id="' . esc_attr( $list_id ) . '" class="meta-multiple-list">';
+		$markup .= '<ol id="' . esc_attr( $list_id ) . '" class="meta-multiple-list">';
 		foreach( $values as $index => $value ) {
 			$multiple['#index'] = $index;
-			echo '<li class="meta-multiple-item"><a class="remove-multiple-item">' . esc_html( $element['#remove_link'] ) . '</a>';
+			$markup .= '<li class="meta-multiple-item"><a class="remove-multiple-item">' . esc_html( $element['#remove_link'] ) . '</a>';
 			self::render_form( $multiple, $value );
-			echo '</li>';
+			$markup .= '</li>';
 		}
-		echo '</ol>';
+		$markup .= '</ol>';
 
 		// Render the "add" link
-		echo '<a class="add-multiple-item">' . esc_html( $element['#add_link'] ) . '</a>';
-		echo '</div>';
-	
+		$markup .= '<a class="add-multiple-item">' . esc_html( $element['#add_link'] ) . '</a>';
+		$markup .= '</div>';
 	}
 
 	/**
@@ -485,3 +490,4 @@ class WP_Forms_API {
 		}
 	}
 }
+add_action( 'init', array( 'WP_Forms_API', 'init' ) );
