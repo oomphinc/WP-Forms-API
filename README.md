@@ -204,7 +204,7 @@ An array of CSS classes to add to the container element.
 
 ### Elements
 
-An element is an associative array with at least a '#type' key. An element
+An element is an associative array with at least a `#type` key. An element
 can have any of the properties of a form, as well as the following:
 
 * `#type` (string)
@@ -217,7 +217,7 @@ When present, indicates that the element is an input element. Values:
 * `'textarea'` - A textarea.
 * `'multiple'` - A collection of values.
 * `'composite'` - A composite value which is posted as an array in #key.
-* Any other value will be rendered as a text input. You can use custom types along with the '`wp_form_element_{$form_id}_{$key}` filter to define input tag types 
+* Any other value will be rendered as a text input. You can use custom types along with the `wp_form_element` filter to define input tag types 
 
 *  `#key` (string)
 
