@@ -1,7 +1,7 @@
 # WP_Forms_API
 
 <p align="center">
-  <img height="490" width="275" src="https://github.com/bendoh/WP-Forms-API/raw/master/finally.jpg">
+  <img width="490" height="275" src="https://github.com/bendoh/WP-Forms-API/raw/master/finally.jpg">
 </p>
 
 A Drupal-esque API for creating and processing forms in WordPress
