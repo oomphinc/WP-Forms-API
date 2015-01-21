@@ -25,7 +25,7 @@ class WP_Forms_API {
 		'#size' => null,
 		'#options' => array(),
 		'#container' => 'div',
-		'#container_classes' => array( 'wp-form-element' ),
+		'#container_classes' => array(),
 		'#attrs' => array(),
 		'#class' => array(),
 		'#label' => null,
@@ -276,19 +276,22 @@ class WP_Forms_API {
 
 		$input_id = 'wp-form-' . $element['#slug'];
 
+		$element['#container_classes'][] = 'wp-form-key-' . $element['#key'];
+		$element['#container_classes'][] = 'wp-form-slug-' . $element['#slug'];
+
 		if( $element['#type'] ) {
-			$element['#tag'] = 'input';
-			$element['#container_classes'][] = 'wp-form-element-' . $element['#slug'];
-			$element['#class'][] = 'wp-form-type-' . $element['#type'];
-
 			$attrs = &$element['#attrs'];
-			$element['#content'] = null;
-
 			$attrs['id'] = $input_id;
 			$attrs['name'] = $element['#name']; 
-			$attrs['type'] = 'text';
+			$attrs['type'] = $element['#type'];
 
-			$element['#class'] = array_merge( array( 'wp-form-input', 'wp-form-input-' . $element['#slug'] ), $element['#class'] );
+			$element['#tag'] = 'input';
+			$element['#container_classes'][] = 'wp-form-element';
+			$element['#container_classes'][] = 'wp-form-type-' . $element['#type'];
+
+			$element['#content'] = null;
+
+			$element['#class'][] = 'wp-form-input';
 
 			if( is_scalar( $element['#value'] ) && strlen( $element['#value'] ) > 0 ) {
 				$attrs['value'] = $element['#value'];
@@ -305,7 +308,6 @@ class WP_Forms_API {
 			// Adjust form element attributes based on input type
 			switch( $element['#type'] ) {
 			case 'checkbox':
-				$attrs['type'] = 'checkbox';
 				$attrs['value'] =	'1';
 
 				if( $element['#value'] ) {
@@ -333,6 +335,7 @@ class WP_Forms_API {
 			case 'composite':
 				unset( $attrs['value'] );
 				unset( $attrs['name'] );
+				unset( $attrs['type'] );
 				$element['#tag'] = '';
 				break;
 
@@ -369,7 +372,7 @@ class WP_Forms_API {
 
 		if( isset( $element['#label'] ) ) {
 			$markup .= self::make_tag( 'label', array(
-				'class' => 'wp-form-label wp-form-label-' . $element['#slug'],
+				'class' => 'wp-form-label',
 				'for' => $input_id,
 			), esc_html( $element['#label'] ) );
 		}
