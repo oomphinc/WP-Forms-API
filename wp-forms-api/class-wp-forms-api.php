@@ -17,8 +17,8 @@ class WP_Forms_API {
 	static $element_defaults = array(
 		'#id' => '',
 		'#type' => null,
-		'#key' => '', 
-		'#slug' => '', 
+		'#key' => '',
+		'#slug' => '',
 		'#name' => '',
 		'#form' => null,
 		'#placeholder' => null,
@@ -49,7 +49,7 @@ class WP_Forms_API {
 	/**
 	 * Return HTML with tag $tagname and keyed attrs $attrs.
 	 *
-	 * If $content is not null, contain with $tagname and 
+	 * If $content is not null, contain with $tagname and
 	 * render close tag.
 	 *
 	 * If $content === false, just emit an open tag.
@@ -81,11 +81,11 @@ class WP_Forms_API {
 	}
 
 	/**
-	 * Get elements from a form. 
+	 * Get elements from a form.
 	 *
 	 * @param array $form
 	 *
-	 * Filters out elements with keys starting with '#', and sets default 
+	 * Filters out elements with keys starting with '#', and sets default
 	 * properties for each element so they can be safely assumed to be present.
 	 */
 	static function get_elements( $form ) {
@@ -97,6 +97,10 @@ class WP_Forms_API {
 			}
 
 			$element += self::$element_defaults;
+
+			if( !is_array( $element['#class'] ) ) {
+				$element['#class'] = array( $element['#class'] );
+			}
 
 			// Default some properties to $key
 			foreach( array( '#key', '#slug', '#name' ) as $field ) {
@@ -114,8 +118,8 @@ class WP_Forms_API {
 	/**
 	 * Render forms.
 	 *
-	 * @param array $form. any value with a key not 
-	 *   starting with '#' is considered an element. 
+	 * @param array $form. any value with a key not
+	 *   starting with '#' is considered an element.
 	 *
 	 * Special keys, all optional:
 	 *
@@ -174,7 +178,7 @@ class WP_Forms_API {
 		if( $form['#type'] == 'composite' && $form['#key'] ) {
 			$value_root = &$values[$form['#key']];
 		}
-		
+
 		foreach( $elements as $key => $element ) {
 			// Add index when applicable
 			if( isset( $form['#index'] ) && $form['#name'] ) {
@@ -204,7 +208,7 @@ class WP_Forms_API {
 	 *
 	 * @param array $element
 	 *
-	 * The element to render. Any keys starting with '#' are considered special, 
+	 * The element to render. Any keys starting with '#' are considered special,
 	 * any other keys are considered sub-elements
 	 *
 	 * Meaningful keys:
@@ -217,7 +221,7 @@ class WP_Forms_API {
 	 * 	'composite' - A composite value which is posted as an array in #key
 	 *
 	 * #key
-	 * The key (form name) of this element. This is the only absolutely required 
+	 * The key (form name) of this element. This is the only absolutely required
 	 * key in the element, but is set as part of get_elements().
 	 *
 	 * #placeholder
@@ -227,24 +231,24 @@ class WP_Forms_API {
 	 * Array of options for select boxes
 	 *
 	 * #slug
-	 * The machine-readable slug for this element. This is used to compose 
+	 * The machine-readable slug for this element. This is used to compose
 	 * machine-readable ids and class names.
-	 * 
+	 *
 	 * #label
 	 * Displayed label for this element
 	 *
 	 * #required
-	 * TODO: Does nothing right now. Will hide non-default options in select 
+	 * TODO: Does nothing right now. Will hide non-default options in select
 	 * boxes
 	 *
 	 * #multiple
 	 * If defined, a form structure that becomes part of a collection with CRUD.
-	 * instances of the child can be created and updated, and is stored as an 
+	 * instances of the child can be created and updated, and is stored as an
 	 * array rather than a dictionary in $values.
 	 *
 	 * #add_link
 	 * Link text to show to add an item to this multiple list
-	 * 
+	 *
 	 * #remove_link
 	 * Link text to show to remove an item to this multiple list
 	 *
@@ -282,14 +286,12 @@ class WP_Forms_API {
 		if( $element['#type'] ) {
 			$attrs = &$element['#attrs'];
 			$attrs['id'] = $input_id;
-			$attrs['name'] = $element['#name']; 
+			$attrs['name'] = $element['#name'];
 			$attrs['type'] = $element['#type'];
 
 			$element['#tag'] = 'input';
 			$element['#container_classes'][] = 'wp-form-element';
 			$element['#container_classes'][] = 'wp-form-type-' . $element['#type'];
-
-			$element['#content'] = null;
 
 			$element['#class'][] = 'wp-form-input';
 
@@ -307,8 +309,13 @@ class WP_Forms_API {
 
 			// Adjust form element attributes based on input type
 			switch( $element['#type'] ) {
+			case 'button':
+				$element['#tag'] = 'button';
+				break;
+
 			case 'checkbox':
 				$attrs['value'] =	'1';
+				$element['#content'] = null;
 
 				if( $element['#value'] ) {
 					$attrs['checked'] = 'checked';
@@ -320,13 +327,13 @@ class WP_Forms_API {
 				$element['#tag'] = 'textarea';
 				$element['#content'] = esc_textarea( $element['#value'] );
 				unset( $attrs['value'] );
-				unset( $attrs['type'] );	
+				unset( $attrs['type'] );
 
 				break;
 
 			case 'multiple':
 				$element['#tag'] = 'div';
-				$element['#content'] .= self::render_multiple_element( $element, $values[$element['#key']] );
+				$element['#content'] = self::render_multiple_element( $element, $values[$element['#key']] );
 				unset( $attrs['value'] );
 				unset( $attrs['type'] );
 				unset( $attrs['name'] );
@@ -336,13 +343,14 @@ class WP_Forms_API {
 				unset( $attrs['value'] );
 				unset( $attrs['name'] );
 				unset( $attrs['type'] );
+				$element['#content'] = null;
 				$element['#tag'] = '';
 				break;
 
 			case 'select':
 				$element['#tag'] = 'select';
 				unset( $attrs['value'] );
-				unset( $attrs['type'] );	
+				unset( $attrs['type'] );
 
 				$options = array();
 
@@ -363,6 +371,10 @@ class WP_Forms_API {
 
 					$element['#content'] .= self::make_tag('option', $option_atts, esc_html( $label ) );
 				}
+
+			default:
+				$element['#content'] = null;
+				break;
 			}
 		}
 
