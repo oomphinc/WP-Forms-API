@@ -536,6 +536,9 @@ class WP_Forms_API {
 				$element['#value'] = $input[$element['#key']];
 			}
 		}
+		// Ignore buttons
+		else if( $element['#type'] == 'button' ) {
+		}
 		// Or just pull the value from the input
 		else if( isset( $input[$element['#key']] ) ) {
 			$element['#value'] = $input[$element['#key']];
