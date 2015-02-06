@@ -1,4 +1,4 @@
-# WP_Forms_API
+# WP Forms API
 
 <p align="center">
   <img width="490" height="275" src="https://github.com/bendoh/WP-Forms-API/raw/master/finally.jpg">
