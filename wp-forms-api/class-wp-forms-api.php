@@ -22,6 +22,7 @@ class WP_Forms_API {
 		'#name' => '',
 		'#form' => null,
 		'#placeholder' => null,
+		'#default' => null,
 		'#size' => null,
 		'#options' => array(),
 		'#container' => 'div',
@@ -29,6 +30,7 @@ class WP_Forms_API {
 		'#attrs' => array(),
 		'#class' => array(),
 		'#label' => null,
+		'#description' => null,
 		'#required' => false,
 		'#index' => null,
 		'#multiple' => null,
@@ -228,7 +230,7 @@ class WP_Forms_API {
 	 * Placeholder for elements that support it
 	 *
 	 * #options
-	 * Array of options for select boxes
+	 * Array of options for select boxes, given by value => label
 	 *
 	 * #slug
 	 * The machine-readable slug for this element. This is used to compose
@@ -276,6 +278,9 @@ class WP_Forms_API {
 
 		if( isset( $values[$element['#key']] ) ) {
 			$element['#value'] = $values[$element['#key']];
+		}
+		else if( isset( $element['#default'] ) ) {
+			$element['#value'] = $element['#default'];
 		}
 
 		$input_id = 'wp-form-' . $element['#slug'];
@@ -362,15 +367,16 @@ class WP_Forms_API {
 
 				$element['#content'] = '';
 
-				foreach( $options as $option => $label ) {
-					$option_atts = array( 'value' => $option );
+				foreach( $options as $value => $label ) {
+					$option_atts = array( 'value' => $value );
 
-					if( $option === $element['#value'] ) {
+					if( $value == $element['#value'] ) {
 						$option_atts['selected'] = "selected";
 					}
 
 					$element['#content'] .= self::make_tag('option', $option_atts, esc_html( $label ) );
 				}
+				break;
 
 			default:
 				$element['#content'] = null;
@@ -394,6 +400,10 @@ class WP_Forms_API {
 		// Tagname may have been unset (such as in a composite value)
 		if( $element['#tag'] ) {
 			$markup .= self::make_tag( $element['#tag'], $element['#attrs'], $element['#content'] );
+		}
+
+		if( $element['#description'] ) {
+			$markup .= self::make_tag( 'p', array( 'class' => 'description' ), $element['#description'] );
 		}
 
 		$markup .= self::render_form( $element, $values );
@@ -514,7 +524,7 @@ class WP_Forms_API {
 			$element['#value'] = isset( $input[$element['#key']] );
 		}
 		// Munge composite elements
-		else if($element['#type'] == 'composite') {
+		else if( $element['#type'] == 'composite' ) {
 			$values_root = &$values[$element['#key']];
 			$input_root = &$input[$element['#key']];
 		}

@@ -4,7 +4,7 @@ Plugin Name: WP Forms API
 Description: Implement an API similar to Drupal's Forms API for rendering
 and processing forms.
 Author: Ben Doherty @ Oomph, Inc.
-Version: 0.0.1
+Version: 0.0.5
 Author URI: http://www.oomphinc.com/thinking/author/bdoherty/
 License: GPLv2 or later
 
@@ -22,6 +22,6 @@ License: GPLv2 or later
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/ 
+*/
 
 require( __DIR__ . '/class-wp-forms-api.php' );
