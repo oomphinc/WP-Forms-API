@@ -22,7 +22,11 @@ There are two basic elements:
 
 'element', a form that has at least `#type` and `#key` keys.
 
-## Quick Start
+## Build
+
+This project uses NPM to manage dependencies and gulp to build. Use `npm install` to install all the dependencies. Use `gulp` to build the CSS files.
+
+## API Quick Start
 
 ```php
 /**

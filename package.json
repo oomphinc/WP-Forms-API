@@ -1,0 +1,21 @@
+{
+  "name": "WP_Forms_API",
+  "version": "0.1.0",
+  "description": "The drupal-iest forms API for WordPress evar.",
+  "main": "gulpfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bendoh/WP-Forms-API"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "gulp": "^3.6.2",
+    "gulp-ruby-sass": "^0.5.0",
+    "gulp-watch": "^0.6.4"
+  }
+}
+

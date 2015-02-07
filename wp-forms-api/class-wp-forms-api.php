@@ -43,9 +43,22 @@ class WP_Forms_API {
 
 	/**
 	 * Initialize this module
+	 *
+	 * @action init
 	 */
 	static function init() {
 		wp_register_script( 'wp-forms', plugins_url( 'wp-forms-api.js', 'wp-forms-api' ), array(), 1, true );
+
+		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'admin_enqueue' ) );
+	}
+
+	/**
+	 * Enqueue admin assets
+	 *
+	 * @action admin_enqueue_scripts
+	 */
+	static function admin_enqueue() {
+		wp_enqueue_style( 'wp-forms', plugins_url( 'wp-forms-api.css', 'wp-forms-api' ) );
 	}
 
 	/**
@@ -201,6 +214,7 @@ class WP_Forms_API {
 		}
 
 		wp_enqueue_script( 'wp-forms' );
+		wp_enqueue_style( 'wp-forms' );
 
 		return self::make_tag( $form['#container'], $form['#attrs'], $markup );
 	}
@@ -377,6 +391,29 @@ class WP_Forms_API {
 					$element['#content'] .= self::make_tag('option', $option_atts, esc_html( $label ) );
 				}
 				break;
+
+			case 'image':
+				$image_url = '';
+
+				wp_enqueue_media();
+
+				if( $element['#value'] ) {
+					$image_src = wp_get_attachment_image_src( $element['#value'] );
+
+					if( isset( $src[0] ) ) {
+						$image_url = $image_src[0];
+					}
+				}
+
+				$element['#tag'] = 'div';
+				$element['#class'][] = 'select-image-field';
+				$element['#content'] =
+					self::make_tag( 'div', array( 'class' => 'image-container' ),
+						self::make_tag( 'img', array( 'src' => $image_url ) ) ) .
+					self::make_tag( 'input', array( 'type' => 'text', 'name' => $element['#name'], 'value' => $element['#value'] ) ) .
+					self::make_tag( 'span', array( 'class' => 'image-delete' ), '' );
+				break;
+
 
 			default:
 				$element['#content'] = null;
