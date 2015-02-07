@@ -290,6 +290,9 @@ class WP_Forms_API {
 			throw new Exception( "Form UI error: Every element must have a #key" );
 		}
 
+		// Allow for pre-processing of this element
+		$element = apply_filters( 'wp_form_prepare_element', $element );
+
 		if( isset( $values[$element['#key']] ) ) {
 			$element['#value'] = $values[$element['#key']];
 		}
