@@ -77,8 +77,59 @@
 				$field.find('input').val(image.id);
 				$field.find('img').attr('src', image.get('sizes').thumbnail.url);
 			});
+		});
+	});
 
-			media.frame.open();
+	// "Select Post" field
+	$(function() {
+		$('.wp-form-post-select').each(function() {
+			var items = new Backbone.Collection();
+			var $input = $(this);
+			var $field = $('<input type="text" />');
+
+			$(this).before($field);
+
+			if($input.data('title')) {
+				$field.val($input.data('title'));
+			}
+
+			$field.autocomplete({
+				source: function(request, response) {
+					var attrs = { term: request.term };
+
+					if($input.data('post-type')) {
+						attrs['post_type'] = $input.data('post-type').split(' ');
+					}
+
+					wp.ajax.post('wp_form_search_posts', attrs)
+						.done(function(data) {
+							response(_.map(data, function(v) {
+								v.id = v.ID;
+
+								var itemModel = new Backbone.Model(v);
+
+								items.remove(v.id);
+								items.add(itemModel);
+
+								return {
+									label: v.post_title,
+									value: v.post_title,
+									model: itemModel
+								}
+							}));
+						})
+						.fail(function(data) {
+							response([]);
+						});
+				},
+				change: function(ev, ui) {
+					$input.val(ui.item.model.get('id'));
+				},
+				select: function(ev, ui) {
+					$input.val(ui.item.model.get('id'));
+				},
+				minLength: 0,
+			});
 		});
 	});
 })(jQuery);

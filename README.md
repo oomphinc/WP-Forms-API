@@ -14,6 +14,8 @@ Writing and managing admin forms in WordPress is a real pain in the butt, and a 
 
 Having forms driven by data sets instead of templates and markup creates a very generic, predictable, and stylizable structure in the rendered form markup, and easy management and updates to the form structure.
 
+Also provides more WordPress-specific form controls, such as "Select Image" or "Select Post" fields, which can enable powerful admin forms with very little code.
+
 ## Overview
 
 There are two basic elements:
@@ -221,6 +223,9 @@ When present, indicates that the element is an input element. Values:
 * `'textarea'` - A textarea.
 * `'multiple'` - A collection of values.
 * `'composite'` - A composite value which is posted as an array in #key.
+* `'image'` - An image from the media library
+* `'post_select'` - A post
+
 * Any other value will be rendered as a text input. You can use custom types along with the `wp_form_element` filter to define input tag types 
 
 *  `#key` (string)
@@ -264,6 +269,9 @@ When using #multiple, the text to show for the "Add Item" button.
 
 When using #multiple, the text to show for the "Remove Item" button.
 
+*  `#post_type` (string)
+
+For `#type = 'post_select'`, the space-separated list of valid post types to search against.
 
 ### Filterable element properties
 

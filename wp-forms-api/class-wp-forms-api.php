@@ -47,9 +47,36 @@ class WP_Forms_API {
 	 * @action init
 	 */
 	static function init() {
-		wp_register_script( 'wp-forms', plugins_url( 'wp-forms-api.js', 'wp-forms-api' ), array(), 1, true );
+		wp_register_script( 'wp-forms', plugins_url( 'wp-forms-api.js', 'wp-forms-api' ), array( 'jquery-ui-autocomplete' ), 1, true );
 
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'admin_enqueue' ) );
+		add_action( 'wp_ajax_wp_form_search_posts', array( __CLASS__, 'search_posts' ) );
+	}
+
+	/**
+	 * Search for a post by name.
+	 *
+	 * @action wp_ajax_wp_form_search_posts
+	 */
+	static function search_posts() {
+		global $wpdb;
+
+		if( !isset( $_POST['term'] ) ) {
+			return;
+		}
+
+		$query_args = array(
+			's' => $_POST['term'],
+			'post_status' => 'any'
+		);
+
+		if( isset( $_POST['post_type'] ) ) {
+			$query_args['post_type'] = (array) $_POST['post_type'];
+		}
+
+		$query = new WP_Query( $query_args );
+
+		wp_send_json_success( $query->posts );
 	}
 
 	/**
@@ -403,7 +430,7 @@ class WP_Forms_API {
 				if( $element['#value'] ) {
 					$image_src = wp_get_attachment_image_src( $element['#value'] );
 
-					if( isset( $src[0] ) ) {
+					if( isset( $image_src[0] ) ) {
 						$image_url = $image_src[0];
 					}
 				}
@@ -417,6 +444,27 @@ class WP_Forms_API {
 					self::make_tag( 'span', array( 'class' => 'image-delete' ), '' );
 				break;
 
+			case 'post_select':
+				$element['#class'][] = 'wp-form-post-select';
+				$element['#attrs']['type'] = 'hidden';
+
+				if( isset( $element['#post_type'] ) ) {
+					if( !is_array( $element['#post_type'] ) ) {
+						$element['#post_type'] = array( $element['#post_type'] );
+					}
+
+					$element['#attrs']['data-post-type'] = implode( ' ', $element['#post_type'] );
+				}
+
+				if( $element['#value'] ) {
+					$post = get_post( $element['#value'] );
+
+					if( $post ) {
+						$element['#attrs']['data-title'] = $post->post_title;
+					}
+				}
+
+				break;
 
 			default:
 				$element['#content'] = null;
