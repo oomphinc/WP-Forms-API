@@ -27,9 +27,11 @@
 				.on('click', '.add-multiple-item', function() {
 					var $t = $(this),
 						count = $list.children('li').length,
-						html = $tmpl.text().replace(/%INDEX%/g, count);
+						$html = $($tmpl.text().replace(/%INDEX%/g, count));
 
-					$list.append(html);
+					initializeAttachments($html);
+
+					$list.append($html);
 				})
 
 				// Remove an item item on click
@@ -116,8 +118,8 @@
 		}
 	});
 
-	$(function() {
-		$('.select-attachment-field').each(function() {
+	var initializeAttachments = function(context) {
+		$(context).find('.select-attachment-field').each(function() {
 			var view = new WPFormImageField({
 				model: media.model.Attachment.get(this.value).clone()
 			});
@@ -135,6 +137,10 @@
 
 			$(this).replaceWith(view.$el);
 		});
+	}
+
+	$(function() {
+		initializeAttachments('body');
 	});
 
 	// "Select Post" field
