@@ -100,10 +100,14 @@
 				attachmentId = $field.val(),
 				attachment = media.model.Attachment.get(attachmentId).clone();
 
-			$field.removeClass('ui-dirty');
+			view.model.clear({ silent: true });
+			view.model.set({ id: attachmentId });
+
+			$field.addClass('ui-dirty');
 
 			attachment.fetch()
 				.done(function() {
+					$field.removeClass('ui-dirty');
 					view.model.set(this.attributes);
 				})
 				.fail(function() {
