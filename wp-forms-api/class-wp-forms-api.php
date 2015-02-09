@@ -647,7 +647,7 @@ class WP_Forms_API {
 	/**
 	 * Templates used in this module
 	 */
-	function media_templates() { ?>
+	static function media_templates() { ?>
 <script id="tmpl-wp-form-attachment-field" type="text/html">
 <div class="attachment-container">
 	<img src="{{ data.type == 'image' ? data.url : data.icon }}" />
