@@ -9,141 +9,165 @@
 	.inside > & {
 		margin: 0;
 	}
+}
 
-	.wp-form-label {
-		margin-right: 1.5em;
-	}
-	.wp-form-element {
-		clear: both;
-	}
+.wp-form-label {
+  margin-right: 1.5em;
+}
+.wp-form-element {
+  clear: both;
+}
 
-	.wp-form-input {
-		width: auto;
-	}
+.wp-form-input {
+  width: auto;
+}
 
-	.wp-form-element {
-		margin: 0 1em 1em 0;
-		display: inline-block;
-	}
+.wp-form-element {
+  margin: 0 1em 1em 0;
+  display: inline-block;
+}
 
-	.wp-form-type-text, .wp-form-type-textarea {
-	}
+.wp-form-type-text, .wp-form-type-textarea {
+}
 
-	.wp-form-type-image {
-		display: block;
+.wp-form-type-image {
+  display: block;
 
-		.wp-form-label {
-			display: block;
-		}
-	}
+  .wp-form-label {
+    display: block;
+  }
+}
 
-	.wp-form-type-text,
-	.wp-form-type-url,
-	.wp-form-type-textarea {
-		.wp-form-input {
-			width: 95%;
-		}
-	}
+.wp-form-type-text,
+.wp-form-type-url,
+.wp-form-type-textarea {
+  .wp-form-input {
+    width: 95%;
+  }
+}
 
-	.wp-form-key-citystatezip,
-	.wp-form-key-coordinates {
-		.wp-form-element {
-			display: inline-block;
-		}
-	}
+.wp-form-key-citystatezip,
+.wp-form-key-coordinates {
+  .wp-form-element {
+    display: inline-block;
+  }
+}
 
-	.wp-form-type-url,
-	.wp-form-type-text,
-	.wp-form-type-textarea,
-	.wp-form-type-multiple,
-	.wp-form-type-composite {
-		display: block;
-	}
+.wp-form-type-url,
+.wp-form-type-text,
+.wp-form-type-textarea,
+.wp-form-type-multiple,
+.wp-form-type-composite {
+  display: block;
+}
 
-	.wp-form-type-composite > .wp-form-label {
-		display: block;
-	}
+.wp-form-type-composite > .wp-form-label {
+  display: block;
+}
 
-	.wp-form-type-date {
-		display: inline-block;
-	}
+.wp-form-type-date {
+  display: inline-block;
+}
 
-	.wp-form-form {
-		margin: .25em 0 1em;
-	}
+.wp-form-form {
+  margin: .25em 0 1em;
+}
 
-	.wp-form-type-multiple {
+.wp-form-type-multiple {
+  ol {
+    margin: 0;
+    padding: 0;
+  }
 
-		ol {
-			margin: 0;
-			padding: 0;
-		}
+  .wp-form-multiple-item {
+    border-bottom: 1px solid #d0d0d0;
+    padding: 5px;
+  }
+  .add-multiple-item,
+  .remove-multiple-item {
+    cursor: pointer;
+    font-weight: bold;
+  }
+  .remove-multiple-item {
+    float: right;
+  }
 
-		.wp-form-multiple-item {
-			border-bottom: 1px solid #d0d0d0;
-			padding: 5px;
-		}
-		.add-multiple-item,
-		.remove-multiple-item {
-			cursor: pointer;
-			font-weight: bold;
-		}
-		.remove-multiple-item {
-			float: right;
-		}
-
-		.add-multiple-item:before {
-			display: inline;
-			content: "+ ";
-		}
-	}
+  .add-multiple-item:before {
+    display: inline;
+    content: "+ ";
+  }
 }
 
 /**
- * Image selection field
+ * Attachment selection field, maybe image
  */
-.select-image-field {
-	float: left;
-	clear: both;
-	text-align: center;
+.wp-form-type-attachment,
+.wp-form-type-image {
+  display: block;
 
-	.image-container {
-		background-color: #fff;
-		box-sizing: border-box;
-		padding: 5px;
-		width: 150px;
-		height: 150px;
+  .select-attachment-field {
+    position: relative;
+    float: left;
+    width: 100%;
 
-		cursor: pointer;
-		border: 1px solid #d8d8d8;
-		border-radius: 5px;
+    .attachment-container {
+      float: left;
+      background-color: #fff;
+      box-sizing: border-box;
+      padding: 5px;
+      margin-right: 1em;
+      width: 150px;
+      height: 150px;
 
-		img {
-			max-width: 100%;
-			max-height: 100%;
-			width: auto;
-			height: auto;
-		}
-	}
+      cursor: pointer;
+      border: 1px solid #d8d8d8;
+      border-radius: 5px;
 
-	input {
-		width: 5em;
-	}
-	.ui-dirty {
-		background-color: #f8e0e0;
-	}
+      img {
+        max-width: 100%;
+        max-height: 100%;
+        width: auto;
+        height: auto;
+        position: relative;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
 
-	.image-delete {
-		display: inline-block;
-		width: 25px;
+      }
+    }
 
-		&:before {
-			position: relative;
-			top: .25em;
-			font-family: "dashicons";
-			content: "\f158";
-			font-size: 1.5em;
-			display: inline;
-		}
-	}
+    label {
+      span {
+        display: block;
+      }
+
+      display: block;
+    }
+
+    .ui-dirty {
+      background-color: #f8e0e0;
+    }
+
+    .attachment-delete {
+      display: block;
+      width: 1em;
+      height: 1em;
+      position: absolute;
+      top: .25em;
+      left: .25em;
+      font-family: "dashicons";
+      color: #000;
+      font-size: 1.5em;
+      background: rgba(250, 250, 250, .6);
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      cursor: pointer;
+
+      &::before {
+        display: inline;
+        content: "\f158";
+      }
+
+    }
+  }
 }

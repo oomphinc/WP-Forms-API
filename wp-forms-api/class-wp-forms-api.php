@@ -51,6 +51,7 @@ class WP_Forms_API {
 
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'admin_enqueue' ) );
 		add_action( 'wp_ajax_wp_form_search_posts', array( __CLASS__, 'search_posts' ) );
+		add_action( 'print_media_templates', array( __CLASS__, 'media_templates' ) );
 	}
 
 	/**
@@ -422,26 +423,21 @@ class WP_Forms_API {
 				}
 				break;
 
+			case 'attachment':
 			case 'image':
-				$image_url = '';
-
+				// Fancy JavaScript UI will take care of this field. Degrades to a simple
+				// ID field
 				wp_enqueue_media();
 
-				if( $element['#value'] ) {
-					$image_src = wp_get_attachment_image_src( $element['#value'] );
+				$element['#class'][] = 'select-attachment-field';
 
-					if( isset( $image_src[0] ) ) {
-						$image_url = $image_src[0];
-					}
+				if( $element['#type'] == 'image' ) {
+					$element['#class'][] = 'select-image-field';
 				}
 
-				$element['#tag'] = 'div';
-				$element['#class'][] = 'select-image-field';
-				$element['#content'] =
-					self::make_tag( 'div', array( 'class' => 'image-container' ),
-						self::make_tag( 'img', array( 'src' => $image_url ) ) ) .
-					self::make_tag( 'input', array( 'type' => 'text', 'name' => $element['#name'], 'value' => $element['#value'] ) ) .
-					self::make_tag( 'span', array( 'class' => 'image-delete' ), '' );
+				$attrs['type'] = 'text';
+				$attrs['data-attachment-type'] = $element['#type'];
+
 				break;
 
 			case 'post_select':
@@ -646,6 +642,34 @@ class WP_Forms_API {
 		$element = apply_filters_ref_array( 'wp_form_process_element', array( &$element, &$values, &$input ) );
 
 		self::process_form( $element, $values_root, $input_root );
+	}
+
+	/**
+	 * Templates used in this module
+	 */
+	function media_templates() { ?>
+<script id="tmpl-wp-form-attachment-field" type="text/html">
+<div class="attachment-container">
+	<img src="{{ data.type == 'image' ? data.url : data.icon }}" />
+</div>
+<label>
+	<span><?php _e( "ID:", 'wp-forms-api' ); ?></span>
+	<input type="text" name="{{ data.input_name }}" class="wp-form-attachment-id" value="{{ data.id }}" />
+</label>
+<label>
+	<span><?php _e( "Title:", 'wp-forms-api' ); ?></span>
+	<input type="text" value="{{ data.title }}" readonly="readonly" />
+</label>
+<label>
+	<a href="{{ data.link }}" target="_blank"><?php __( "View", 'wp-forms-api' ); ?></a>
+</label>
+<# if(data.url) { #><span class="attachment-delete"></span><# } #>
+<p>
+<# if(data.editLink) { #><a href="{{ data.editLink }}">Edit</a>&nbsp;&nbsp;<# } #>
+<# if(data.url) { #><a href="{{ data.url }}">View</a><# } #>
+</p>
+</script>
+	<?php
 	}
 }
 add_action( 'init', array( 'WP_Forms_API', 'init' ) );
