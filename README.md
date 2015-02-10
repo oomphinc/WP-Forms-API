@@ -352,4 +352,5 @@ This project is merely a generalization of work I did for another project. I've 
 ![](https://github.com/gdtrombetti/WP-Forms-API/blob/master/images/Oomph_Box.png)
 ![](https://github.com/gdtrombetti/WP-Forms-API/blob/master/images/Oomph_logo.png)
 
+Oomph is a full service digital design and engineering firm assisting premium brands and media companies with large-scale content engagement solutions.
 http://oomphinc.com/
