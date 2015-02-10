@@ -348,3 +348,9 @@ Labels receive the classes `.wp-form-label` and `.wp-form-label-{$element['#slug
 
 This project is merely a generalization of work I did for another project. I've spent many frustrating hours building forms in WordPress, and I knew there had to be an easier way. This doesn't claim to be nearly as powerful as the Drupal Forms API, but maybe one day, with your help, it could be!
 
+## Plugin brought to you by Oomph, Inc
+
+![](https://github.com/gdtrombetti/WP-Forms-API/blob/master/images/Oomph_logo.png)
+
+Oomph is a full service digital design and engineering firm assisting premium brands and media companies with large-scale content engagement solutions.
+http://oomphinc.com/
