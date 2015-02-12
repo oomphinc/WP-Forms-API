@@ -263,6 +263,9 @@ class WP_Forms_API {
 	 * 	'checkbox' - A boolean
 	 * 	'textarea' - A textarea
 	 * 	'composite' - A composite value which is posted as an array in #key
+	 * 	'image' - An image selection field
+	 * 	'attachment' - An attachment selection field
+	 * 	'multiple' - A zero-to-infinity multiple value defined in #multiple key
 	 *
 	 * #key
 	 * The key (form name) of this element. This is the only absolutely required
