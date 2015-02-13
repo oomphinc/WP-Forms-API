@@ -27,6 +27,7 @@ class WP_Forms_API {
 		'#options' => array(),
 		'#container' => 'div',
 		'#container_classes' => array(),
+		'#markup' => '',
 		'#attrs' => array(),
 		'#class' => array(),
 		'#label' => null,
@@ -266,6 +267,8 @@ class WP_Forms_API {
 	 * 	'image' - An image selection field
 	 * 	'attachment' - An attachment selection field
 	 * 	'multiple' - A zero-to-infinity multiple value defined in #multiple key
+	 * 	'markup' - Literal markup. Specify markup value in #markup key.
+	 * 	'post_select' - A post selection field. Can specify types in #post_type key.
 	 *
 	 * #key
 	 * The key (form name) of this element. This is the only absolutely required
@@ -298,6 +301,9 @@ class WP_Forms_API {
 	 *
 	 * #remove_link
 	 * Link text to show to remove an item to this multiple list
+	 *
+	 * #markup
+	 * Literal markup to use. Only applies to '#type' = 'markup'
 	 *
 	 * @param array $values
 	 *
@@ -448,12 +454,10 @@ class WP_Forms_API {
 				$element['#attrs']['type'] = 'hidden';
 
 				if( isset( $element['#post_type'] ) ) {
-					if( !is_array( $element['#post_type'] ) ) {
-						$element['#post_type'] = array( $element['#post_type'] );
-					}
-
-					$element['#attrs']['data-post-type'] = implode( ' ', $element['#post_type'] );
+					$element['#post_type'] = (array) $element['#post_type'];
 				}
+
+				$element['#attrs']['data-post-type'] = implode( ' ', $element['#post_type'] );
 
 				if( $element['#value'] ) {
 					$post = get_post( $element['#value'] );
@@ -484,8 +488,12 @@ class WP_Forms_API {
 
 		$attrs['class'] = join( ' ', $element['#class'] );
 
+		// Markup types just get a literal markup block
+		if( $element['#type'] == 'markup' ) {
+			$markup .= $element['#markup'];
+		}
 		// Tagname may have been unset (such as in a composite value)
-		if( $element['#tag'] ) {
+		else if( $element['#tag'] ) {
 			$markup .= self::make_tag( $element['#tag'], $element['#attrs'], $element['#content'] );
 		}
 
