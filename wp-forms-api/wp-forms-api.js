@@ -2,6 +2,8 @@
  * Deal with various features of the fancy "Forms UI" type implementaion
  */
 (function($) {
+	var fapi = window.wpFormsApi = {};
+
 	var media = wp.media;
 
 	// Multiple-list field
@@ -200,4 +202,7 @@
 			});
 		});
 	});
+
+	fapi.initializeAttachments = initializeAttachments;
+
 })(jQuery);

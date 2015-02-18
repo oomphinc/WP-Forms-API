@@ -413,6 +413,12 @@ class WP_Forms_API {
 
 				$options = array();
 
+				if( $element['#multiple'] ) {
+					$attrs['multiple'] = 'multiple';
+					$attrs['name'] .= '[]';
+					$element['#value'] = (array) $element['#value'];
+				}
+
 				if( !$element['#required'] ) {
 					$options[''] = "- select -";
 				}
@@ -506,7 +512,8 @@ class WP_Forms_API {
 		foreach( $options as $value => $label ) {
 			$option_atts = array( 'value' => $value );
 
-			if( $value == $element['#value'] ) {
+			if( $element['#multiple'] && in_array( $value, $element['#value'] ) ||
+					$value == $element['#value'] ) {
 				$option_atts['selected'] = "selected";
 			}
 
@@ -644,6 +651,10 @@ class WP_Forms_API {
 		else if( $element['#type'] == 'composite' ) {
 			$values_root = &$values[$element['#key']];
 			$input_root = &$input[$element['#key']];
+		}
+		// Munge multi-select elements
+		else if( $element['#type'] == 'select' && $element['#multiple'] ) {
+			$element['#value'] = isset( $input[$element['#key']] ) ? (array) $input[$element['#key']] : array();
 		}
 		// Munge multiple elements
 		else if( $element['#type'] == 'multiple' ) {
