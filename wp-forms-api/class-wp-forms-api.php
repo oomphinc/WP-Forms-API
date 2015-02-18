@@ -337,7 +337,7 @@ class WP_Forms_API {
 			$element['#value'] = $element['#default'];
 		}
 
-		$input_id = 'wp-form-' . $element['#slug'];
+		$input_id = $element['#id'] ? $element['#id'] : 'wp-form-' . $element['#slug'];
 
 		$element['#container_classes'][] = 'wp-form-key-' . $element['#key'];
 		$element['#container_classes'][] = 'wp-form-slug-' . $element['#slug'];
@@ -419,17 +419,8 @@ class WP_Forms_API {
 
 				$options = $options + $element['#options'];
 
-				$element['#content'] = '';
+				$element['#content'] = self::render_options( $options, $element );
 
-				foreach( $options as $value => $label ) {
-					$option_atts = array( 'value' => $value );
-
-					if( $value == $element['#value'] ) {
-						$option_atts['selected'] = "selected";
-					}
-
-					$element['#content'] .= self::make_tag('option', $option_atts, esc_html( $label ) );
-				}
 				break;
 
 			case 'attachment':
@@ -504,6 +495,37 @@ class WP_Forms_API {
 		$markup .= self::render_form( $element, $values );
 
 		return self::make_tag( $element['#container'], array( 'class' => join( ' ', $element['#container_classes'] ) ), $markup );
+	}
+
+	/**
+	 * Recursively render the options and any contained <optgroups> for a select menu
+	 */
+	static function render_options( $options, &$element ) {
+		$markup = '';
+
+		foreach( $options as $value => $label ) {
+			$option_atts = array( 'value' => $value );
+
+			if( $value == $element['#value'] ) {
+				$option_atts['selected'] = "selected";
+			}
+
+			// Allow for nesting one-level deeper by using a key which becomes
+			// the label for an <optgroup> and an array value representing
+			// the options within that optgroup. A downside to this data format
+			// is that values and optgroup labels share the same namespace and thus
+			// a value share the same label of an optgroup.
+			//
+			// This isn't exactly correct, but it works for most cases. Can we make it better?
+			if( is_array( $label ) ) {
+				$markup .= self::make_tag( 'optgroup', array( 'label' => $value ), self::render_options( $label, $element ) );
+			}
+			else {
+				$markup .= self::make_tag( 'option', $option_atts, esc_html( $label ) );
+			}
+		}
+
+		return $markup;
 	}
 
 	/**

@@ -186,7 +186,12 @@
 						});
 				},
 				change: function(ev, ui) {
-					$input.val(ui.item.model.get('id'));
+					if(ui.item) {
+						$input.val(ui.item.model.get('id'));
+					}
+					else {
+						$input.val('');
+					}
 				},
 				select: function(ev, ui) {
 					$input.val(ui.item.model.get('id'));
