@@ -224,6 +224,8 @@ class WP_Forms_API {
 		}
 
 		foreach( $elements as $key => $element ) {
+			$element['#form'] = $form;
+
 			// Add index when applicable
 			if( isset( $form['#index'] ) && $form['#name'] ) {
 				$element['#name'] = $form['#name'] . '[' . $form['#index'] . '][' . $key . ']';
@@ -329,6 +331,7 @@ class WP_Forms_API {
 
 		// Allow for pre-processing of this element
 		$element = apply_filters( 'wp_form_prepare_element', $element );
+		$element = apply_filters( 'wp_form_prepare_element_key_' . $element['#key'], $element );
 
 		if( isset( $values[$element['#key']] ) ) {
 			$element['#value'] = $values[$element['#key']];
@@ -446,21 +449,33 @@ class WP_Forms_API {
 
 				break;
 
+			case 'mce':
+				$element['#tag'] = 'div';
+				$element['#class'][] = 'wp-forms-mce-area';
+				$element['#id'] = 'wp-form-mce-' . $element['#slug'];
+				unset( $attrs['value'] );
+
+				ob_start();
+				wp_editor( $element['#value'], $element['#id'] );
+				$element['#content'] = ob_get_clean();
+
+				break;
+
 			case 'post_select':
 				$element['#class'][] = 'wp-form-post-select';
-				$element['#attrs']['type'] = 'hidden';
+				$attrs['type'] = 'hidden';
 
 				if( isset( $element['#post_type'] ) ) {
 					$element['#post_type'] = (array) $element['#post_type'];
 				}
 
-				$element['#attrs']['data-post-type'] = implode( ' ', $element['#post_type'] );
+				$attrs['data-post-type'] = implode( ' ', $element['#post_type'] );
 
 				if( $element['#value'] ) {
 					$post = get_post( $element['#value'] );
 
 					if( $post ) {
-						$element['#attrs']['data-title'] = $post->post_title;
+						$attrs['data-title'] = $post->post_title;
 					}
 				}
 
@@ -473,6 +488,7 @@ class WP_Forms_API {
 		}
 
 		$element = apply_filters( 'wp_form_element', $element );
+		$element = apply_filters( 'wp_form_element_key_' . $element['#key'], $element );
 
 		$markup = '';
 
