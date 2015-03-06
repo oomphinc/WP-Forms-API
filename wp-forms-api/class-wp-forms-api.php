@@ -321,7 +321,7 @@ class WP_Forms_API {
 		}
 
 		if( !isset( $element['#form'] ) ) {
-			$element['#form'] = $form;
+			$element['#form'] = &$form;
 		}
 
 		// All elements require a key, always.
