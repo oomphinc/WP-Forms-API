@@ -158,6 +158,16 @@
 				$field.val($input.data('title'));
 			}
 
+			$field.attr('placeholder', $input.attr('placeholder'));
+
+			var update = function(ev, ui) {
+				var id = ui.item ? ui.item.model.get('id') : '',
+						label = ui.item ? ui.item.model.get('label') : '';
+
+				$input.val(id);
+				$input.trigger('selected', ui.item);
+			};
+
 			$field.autocomplete({
 				source: function(request, response) {
 					var attrs = { term: request.term };
@@ -187,18 +197,9 @@
 							response([]);
 						});
 				},
-				change: function(ev, ui) {
-					if(ui.item) {
-						$input.val(ui.item.model.get('id'));
-					}
-					else {
-						$input.val('');
-					}
-				},
-				select: function(ev, ui) {
-					$input.val(ui.item.model.get('id'));
-				},
-				minLength: 0,
+				change: update,
+				select: update,
+				minLength: 0
 			});
 		});
 	});
