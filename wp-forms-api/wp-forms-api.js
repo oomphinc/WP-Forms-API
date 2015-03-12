@@ -2,7 +2,7 @@
  * Deal with various features of the fancy "Forms UI" type implementaion
  */
 (function($) {
-	var fapi = window.wpFormsApi = {};
+	var fapi = window.wpFormsApi = window.wpFormsApi || {};
 
 	var media = wp.media;
 
@@ -141,16 +141,15 @@
 		});
 	}
 
-	$(function() {
-		initializeAttachments('body');
-	});
+	var initializePostSelect = function(context) {
+		$(context).find('.wp-form-post-select').each(function() {
+			var items = new Backbone.Collection(),
+			  $input = $(this),
+			  $field = $input.prev('input');
 
-	// "Select Post" field
-	$(function() {
-		$('.wp-form-post-select').each(function() {
-			var items = new Backbone.Collection();
-			var $input = $(this);
-			var $field = $('<input type="text" />');
+			if($field.length == 0) {
+				$field = $('<input type="text" />');
+			}
 
 			$(this).before($field);
 
@@ -202,8 +201,84 @@
 				minLength: 0
 			});
 		});
+	}
+
+	var initializeTermSelect = function(context) {
+		$(context).find('.wp-form-term-select').each(function() {
+			var items = new Backbone.Collection(),
+			  $input = $(this),
+			  $field = $input.prev('input');
+
+			if($field.length == 0) {
+				$field = $('<input type="text" />');
+			}
+
+			$(this).before($field);
+
+			if($input.data('name')) {
+				$field.val($input.data('name'));
+			}
+
+			$field.attr('placeholder', $input.attr('placeholder'));
+			$field.attr('class', $input.attr('class').replace(/\bwp-form-[^\s]*\s*/g, ''));
+
+			var update = function(ev, ui) {
+				var id = ui.item ? ui.item.model.get('term_id') : '',
+						label = ui.item ? ui.item.model.get('name') : '';
+
+				$input.val(id);
+				$input.trigger('selected', ui.item);
+			};
+
+			$field.autocomplete({
+				source: function(request, response) {
+					var attrs = { term: request.term };
+
+					if($input.data('taxonomy')) {
+						attrs['taxonomy'] = $input.data('taxonomy');
+					}
+
+					wp.ajax.post('wp_form_search_terms', attrs)
+						.done(function(data) {
+							response(_.map(data, function(v) {
+								v.id = v.ID;
+
+								var itemModel = new Backbone.Model(v);
+
+								items.remove(v.id);
+								items.add(itemModel);
+
+								return {
+									label: v.name,
+									value: v.name,
+									model: itemModel
+								}
+							}));
+						})
+						.fail(function(data) {
+							response([]);
+						});
+				},
+				change: update,
+				select: update,
+				minLength: 0
+			});
+		});
+	}
+
+	function initialize(context) {
+		initializeAttachments(context);
+		initializePostSelect(context);
+		initializeTermSelect(context);
+	}
+
+	$(function() {
+		initialize('body');
 	});
 
-	fapi.initializeAttachments = initializeAttachments;
 
+	fapi.initialize = initialize;
+	fapi.initializeAttachments = initializeAttachments;
+	fapi.initializePostSelect = initializePostSelect;
+	fapi.initializeTermSelect = initializeTermSelect;
 })(jQuery);

@@ -49,9 +49,9 @@ class WP_Forms_API {
 	 */
 	static function init() {
 		wp_register_script( 'wp-forms', plugins_url( 'wp-forms-api.js', 'wp-forms-api' ), array( 'jquery-ui-autocomplete' ), 1, true );
-
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'admin_enqueue' ) );
 		add_action( 'wp_ajax_wp_form_search_posts', array( __CLASS__, 'search_posts' ) );
+		add_action( 'wp_ajax_wp_form_search_terms', array( __CLASS__, 'search_terms' ) );
 		add_action( 'print_media_templates', array( __CLASS__, 'media_templates' ) );
 	}
 
@@ -64,21 +64,55 @@ class WP_Forms_API {
 		global $wpdb;
 
 		if( !isset( $_POST['term'] ) ) {
-			return;
+			wp_send_json_error();
 		}
 
-		$query_args = array(
-			's' => $_POST['term'],
-			'post_status' => 'any'
-		);
+		$posts = apply_filters( 'wp_form_pre_search_posts', null );
 
-		if( isset( $_POST['post_type'] ) ) {
-			$query_args['post_type'] = (array) $_POST['post_type'];
+		if( !isset( $posts ) ) {
+			$query_args = array(
+				's' => $_POST['term'],
+				'post_status' => 'any'
+			);
+
+			if( isset( $_POST['post_type'] ) ) {
+				$query_args['post_type'] = (array) $_POST['post_type'];
+			}
+
+			$query_args = apply_filters( 'wp_form_search_posts', $query_args );
+
+			$query = new WP_Query( $query_args );
+			$posts = $query->posts;
 		}
 
-		$query = new WP_Query( $query_args );
+		wp_send_json_success( $posts );
+	}
 
-		wp_send_json_success( $query->posts );
+	/**
+	 * Search for a term by name.
+	 *
+	 * @action wp_ajax_wp_form_search_posts
+	 */
+	static function search_terms() {
+		global $wpdb;
+
+		if( !isset( $_POST['term'] ) || !isset( $_POST['taxonomy'] ) ) {
+			wp_send_json_error();
+		}
+
+		$terms = apply_filters( 'wp_form_pre_search_terms', null );
+
+		if( !isset( $terms ) ) {
+			$query_args = array(
+				'search' => $_POST['term'],
+			);
+
+			$terms = get_terms( $_POST['taxonomy'], $query_args );
+		}
+
+		$terms = apply_filters( 'wp_form_search_terms', $terms );
+
+		wp_send_json_success( $terms );
 	}
 
 	/**
@@ -271,6 +305,7 @@ class WP_Forms_API {
 	 * 	'multiple' - A zero-to-infinity multiple value defined in #multiple key
 	 * 	'markup' - Literal markup. Specify markup value in #markup key.
 	 * 	'post_select' - A post selection field. Can specify types in #post_type key.
+	 * 	'term_select' - A taxonomy term selection field. Can specify types in #taxonomy key.
 	 *
 	 * #key
 	 * The key (form name) of this element. This is the only absolutely required
@@ -476,6 +511,22 @@ class WP_Forms_API {
 
 					if( $post ) {
 						$attrs['data-title'] = $post->post_title;
+					}
+				}
+
+				break;
+
+			case 'term_select':
+				$element['#class'][] = 'wp-form-term-select';
+				$attrs['type'] = 'hidden';
+
+				$attrs['data-taxonomy'] = $element['#taxonomy'];
+
+				if( $element['#value'] ) {
+					$term = get_term( (int) $element['#value'], $element['#taxonomy'] );
+
+					if( $term ) {
+						$attrs['data-name'] = $term->name;
 					}
 				}
 
