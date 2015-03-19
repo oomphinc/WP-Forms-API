@@ -194,6 +194,15 @@ class WP_Forms_API {
 	}
 
 	/**
+	 * Is the element a button?
+	 *
+	 * @return bool
+	 */
+	static function is_button( $element ) {
+		return preg_match( '/^button|submit$/', $element['#type'] );
+	}
+
+	/**
 	 * Render forms.
 	 *
 	 * @param array $form. any value with a key not
@@ -368,11 +377,14 @@ class WP_Forms_API {
 		$element = apply_filters( 'wp_form_prepare_element', $element );
 		$element = apply_filters( 'wp_form_prepare_element_key_' . $element['#key'], $element );
 
-		if( isset( $values[$element['#key']] ) ) {
-			$element['#value'] = $values[$element['#key']];
-		}
-		else if( isset( $element['#default'] ) ) {
-			$element['#value'] = $element['#default'];
+		// Ignore inputted values for buttons. Just use their #value for display.
+		if( !self::is_button( $element ) ) {
+			if( isset( $values[$element['#key']] ) ) {
+				$element['#value'] = $values[$element['#key']];
+			}
+			else if( isset( $element['#default'] ) ) {
+				$element['#value'] = $element['#default'];
+			}
 		}
 
 		$input_id = $element['#id'] ? $element['#id'] : 'wp-form-' . $element['#slug'];
@@ -710,8 +722,8 @@ class WP_Forms_API {
 		$values_root = &$values;
 		$input_root = &$input;
 
-		// Process checkbox value by simple presence of #key
-		if( $element['#type'] === 'checkbox' ) {
+		// Process checkbox or button value by simple presence of #key
+		if( $element['#type'] === 'checkbox' || self::is_button( $element ) ) {
 			$element['#value'] = isset( $input[$element['#key']] );
 		}
 		// Munge composite elements
@@ -730,9 +742,6 @@ class WP_Forms_API {
 			if( isset( $input[$element['#key']] ) && is_array( $input[$element['#key']] ) ) {
 				$element['#value'] = $input[$element['#key']];
 			}
-		}
-		// Ignore buttons
-		else if( $element['#type'] == 'button' ) {
 		}
 		// Or just pull the value from the input
 		else if( isset( $input[$element['#key']] ) ) {
