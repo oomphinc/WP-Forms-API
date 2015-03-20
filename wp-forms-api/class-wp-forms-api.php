@@ -85,6 +85,8 @@ class WP_Forms_API {
 			$posts = $query->posts;
 		}
 
+		$posts = apply_filters( 'wp_form_search_results', $posts );
+
 		wp_send_json_success( $posts );
 	}
 
