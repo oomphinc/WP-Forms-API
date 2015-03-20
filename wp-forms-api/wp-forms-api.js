@@ -160,8 +160,7 @@
 			$field.attr('placeholder', $input.attr('placeholder'));
 
 			var update = function(ev, ui) {
-				var id = ui.item ? ui.item.model.get('id') : '',
-						label = ui.item ? ui.item.model.get('label') : '';
+				var id = ui.item && ui.item.model.get('id');
 
 				$input.val(id);
 				$input.trigger('selected', ui.item);
