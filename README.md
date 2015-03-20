@@ -319,7 +319,8 @@ $form = array(
 
 Will result in a multi-valued form with inputs named `favorites[0][name]`, `favorites[1][name]`, and so on, for each value submitted. The form will always render at least one empty input. When multiple-valued form elements are used, the script handle `wp-forms` is enqueued, which manages control of adding / removing multiple elements.
 
-In general, the naming should be unimportant to you when using process_form(), but it is important to know how `$values` will be structured `$values` after calling `process_form()`.
+In general, the naming should be unimportant to you when using `process_form()`, but it is important to know how `$values` will be structured `$values` after calling `process_form()`.
+
 
 ### Processing
 
@@ -343,6 +344,56 @@ Each element is rendered in a container element of tag `#container` with classes
 Each input element is rendered using the tag `$element['#tag']` and attributes in `$element['#attrs']`. These values can be modified per-element using the `wp_form_element` filter. The default classes are `.wp-form-input` and `.wp-form-input-{$element['#slug']}`.
 
 Labels receive the classes `.wp-form-label` and `.wp-form-label-{$element['#slug']}`.
+
+
+## Examples
+
+An example form might look like the following, which captures a name and a zip code:
+
+```php
+<form method="post" action="/my/form/handler">
+<?php
+	$form = array(
+		'name' => array(
+			'#type' => 'text',
+			'#label' => "Enter your name:",
+			'#placeholder' => "Charlie Brown"
+		),
+		'zipcode' => array(
+			'#type' => 'text',
+			'#label' => "Enter your ZIP code:",
+			'#placeholder' => "90210",
+			'#size' => 5
+		),
+		'save' => array(
+			'#type' => 'submit',
+			'#value' => "Save Information"
+		)
+	);
+
+	echo WP_Forms_API::render_form( $form, $input );
+?>
+</form>
+```
+
+This form will present two input fields: `'name'`, and `'zipcode'`, as well as a submit button that is labelled "Save Information".
+
+You can process the form using `WP_Forms_API::process_form()`:
+
+```php
+<!-- Then process the form -->
+<?php
+	WP_Forms_API::process_form( $form, $values );
+?>
+
+<p>
+	Your name is: <?php echo esc_html( $form['name'] ); ?>
+</p>
+
+<p>
+	Your ZIP is: <?php echo esc_html( $form['zipcode'] ); ?>
+</p>
+```
 
 ## Please help!
 
