@@ -142,6 +142,8 @@
 	}
 
 	var initializePostSelect = function(context, args) {
+		args = args || {};
+
 		$(context).find('.wp-form-post-select').each(function() {
 			var items = new Backbone.Collection(),
 			  $input = $(this),
