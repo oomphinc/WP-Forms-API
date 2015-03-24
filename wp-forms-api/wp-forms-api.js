@@ -141,7 +141,7 @@
 		});
 	}
 
-	var initializePostSelect = function(context) {
+	var initializePostSelect = function(context, args) {
 		$(context).find('.wp-form-post-select').each(function() {
 			var items = new Backbone.Collection(),
 			  $input = $(this),
@@ -166,7 +166,7 @@
 				$input.trigger('selected', ui.item);
 			};
 
-			$field.autocomplete({
+			$field.autocomplete(_.extend(args, {
 				source: function(request, response) {
 					var attrs = { term: request.term };
 
@@ -198,7 +198,7 @@
 				change: update,
 				select: update,
 				minLength: 0
-			});
+			}));
 		});
 	}
 
