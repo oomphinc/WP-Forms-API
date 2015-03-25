@@ -2,9 +2,16 @@
  * Deal with various features of the fancy "Forms UI" type implementaion
  */
 (function($) {
-	var fapi = window.wpFormsApi = window.wpFormsApi || {};
+	var fapi = window.wpFormsApi = window.wpFormsApi || {}
+		, media = wp.media;
 
-	var media = wp.media;
+	// Adjust styles to account for variations when using box-sizing
+	$.widget('custom.postListMenu', $.ui.autocomplete, {
+		_resizeMenu: function() {
+			this.menu.element.width($(this.element).outerWidth());
+			$(this.menu.element).css('z-index', 10000000);
+		},
+	});
 
 	// Multiple-list field
 	$(function() {
@@ -168,7 +175,8 @@
 				$input.trigger('selected', ui.item);
 			};
 
-			$field.autocomplete(_.extend(args, {
+			// Extend jQuery UI autocomplete with a custom resizer
+			$field.postListMenu(_.extend(args, {
 				source: function(request, response) {
 					var attrs = { term: request.term };
 
