@@ -539,7 +539,7 @@ class WP_Forms_API {
 				if( $element['#value'] ) {
 					$term = get_term( (int) $element['#value'], $element['#taxonomy'] );
 
-					if( $term ) {
+					if( $term && !is_wp_error( $term ) ) {
 						$attrs['data-name'] = $term->name;
 					}
 				}
