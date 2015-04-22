@@ -380,7 +380,7 @@ class WP_Forms_API {
 		$element = apply_filters( 'wp_form_prepare_element_key_' . $element['#key'], $element );
 
 		// Ignore inputted values for buttons. Just use their #value for display.
-		if( !self::is_button( $element ) ) {
+		if( !self::is_button( $element ) && !isset( $element['#value'] ) ) {
 			if( isset( $values[$element['#key']] ) ) {
 				$element['#value'] = $values[$element['#key']];
 			}
