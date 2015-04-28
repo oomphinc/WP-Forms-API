@@ -98,7 +98,12 @@ class WP_Forms_API {
 	static function search_terms() {
 		global $wpdb;
 
-		if( !isset( $_POST['term'] ) || !isset( $_POST['taxonomy'] ) ) {
+		$input = filter_input_array( INPUT_POST, array(
+			'term' => FILTER_SANITIZE_STRING,
+			'taxonomy' => FILTER_SANITIZE_STRING
+		) );
+
+		if( empty( $input['taxonomy'] ) || !taxonomy_exists( $input['taxonomy'] ) ) {
 			wp_send_json_error();
 		}
 
@@ -106,10 +111,11 @@ class WP_Forms_API {
 
 		if( !isset( $terms ) ) {
 			$query_args = array(
-				'search' => $_POST['term'],
+				'search' => $input['term'],
+				'hide_empty' => false
 			);
 
-			$terms = get_terms( $_POST['taxonomy'], $query_args );
+			$terms = get_terms( $input['taxonomy'], $query_args );
 		}
 
 		$terms = apply_filters( 'wp_form_search_terms', $terms );
