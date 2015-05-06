@@ -285,7 +285,7 @@
 		initialize('body');
 	});
 
-	fapi.initialize = initialize;
+	fapi.setup = initialize;
 	fapi.initializeAttachments = initializeAttachments;
 	fapi.initializePostSelect = initializePostSelect;
 	fapi.initializeTermSelect = initializeTermSelect;
