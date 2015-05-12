@@ -732,7 +732,7 @@ class WP_Forms_API {
 
 		// Process checkbox or button value by simple presence of #key
 		if( $element['#type'] === 'checkbox' || self::is_button( $element ) ) {
-			$element['#value'] = isset( $input[$element['#key']] );
+			$element['#value'] = isset( $input[$element['#key']] ) && $input[$element['#key']];
 		}
 		// Munge composite elements
 		else if( $element['#type'] == 'composite' ) {
