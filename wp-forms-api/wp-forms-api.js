@@ -154,7 +154,8 @@
 		$(context).find('.wp-form-post-select').each(function() {
 			var items = new Backbone.Collection(),
 			  $input = $(this),
-			  $field = $input.prev('input');
+			  $field = $input.prev('input'),
+			  model = new Backbone.Model({ id: $input.val() });
 
 			if($field.length == 0) {
 				$field = $('<input type="text" />');
@@ -164,6 +165,7 @@
 
 			if($input.data('title')) {
 				$field.val($input.data('title'));
+				model.set('title', $input.data('title'));
 			}
 
 			$field.attr('placeholder', $input.attr('placeholder'));
@@ -209,6 +211,8 @@
 				select: update,
 				minLength: 0
 			}));
+
+			$input.trigger('selected', { model: model });
 		});
 	}
 
