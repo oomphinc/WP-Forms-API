@@ -781,11 +781,11 @@ class WP_Forms_API {
 	<img src="{{ data.type == 'image' ? data.url : data.icon }}" />
 </div>
 <label>
-	<span><?php _e( "ID:", 'wp-forms-api' ); ?></span>
+	<span><?php esc_html_e( "ID:", 'wp-forms-api' ); ?></span>
 	<input type="text" name="{{ data.input_name }}" class="wp-form-attachment-id" value="{{ data.id }}" />
 </label>
 <label>
-	<span><?php _e( "Title:", 'wp-forms-api' ); ?></span>
+	<span><?php esc_html_e( "Title:", 'wp-forms-api' ); ?></span>
 	<input type="text" value="{{ data.title }}" readonly="readonly" />
 </label>
 <label>
