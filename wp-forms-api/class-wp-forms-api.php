@@ -505,6 +505,18 @@ class WP_Forms_API {
 				break;
 
 			case 'mce':
+				if ( ! user_can_richedit() ) {
+					// User doesn't have capabilities to richedit - just display
+					// a regular textarea
+					$element['#type'] = 'textarea';
+
+					if ( ! isset( $attrs['rows'] ) ) {
+						$attrs['rows'] = 10;
+					}
+
+					return self::render_element( $element, $values, $form );
+				}
+
 				$element['#tag'] = 'div';
 				$element['#class'][] = 'wp-forms-mce-area';
 				$element['#id'] = 'wp-form-mce-' . $element['#slug'];
