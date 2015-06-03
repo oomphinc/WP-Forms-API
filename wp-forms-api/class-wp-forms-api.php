@@ -40,6 +40,7 @@ class WP_Forms_API {
 		'#remove_link' => 'Remove item',
 		'#tag' => '',
 		'#value' => null,
+		'#allow_html' => false,
 	);
 
 	/**
@@ -505,13 +506,26 @@ class WP_Forms_API {
 				break;
 
 			case 'mce':
+				if( !user_can_richedit() ) {
+					// User doesn't have capabilities to richedit - just display
+					// a regular textarea with html tags allowed
+					$element['#type'] = 'textarea';
+					$element['#allow_html'] = true;
+
+					if( !isset( $attrs['rows'] ) ) {
+						$attrs['rows'] = 10;
+					}
+
+					return self::render_element( $element, $values, $form );
+				}
+
 				$element['#tag'] = 'div';
 				$element['#class'][] = 'wp-forms-mce-area';
 				$element['#id'] = 'wp-form-mce-' . $element['#slug'];
 				unset( $attrs['value'] );
 
 				ob_start();
-				wp_editor( $element['#value'], $element['#id'] );
+				wp_editor( $element['#value'], $element['#id'], array( 'textarea_name' => $element['#name'] ) );
 				$element['#content'] = ob_get_clean();
 
 				break;
@@ -755,8 +769,12 @@ class WP_Forms_API {
 		else if( isset( $input[$element['#key']] ) ) {
 			$element['#value'] = $input[$element['#key']];
 
+			// Sanitization of fields that allow html
+			if( ( isset( $element['#allow_html'] ) && $element['#allow_html'] ) || $element['#type'] == 'mce' ) {
+				$element['#value'] = wp_kses_post( $element['#value'] );
+			}
 			// Simple sanitization of most values
-			if( isset( $element['#type'] ) && $element['#type'] != 'composite' ) {
+			else if( isset( $element['#type'] ) && $element['#type'] != 'composite' ) {
 				$element['#value'] = sanitize_text_field( $element['#value'] );
 			}
 		}
