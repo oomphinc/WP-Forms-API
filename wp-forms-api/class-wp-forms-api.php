@@ -511,7 +511,7 @@ class WP_Forms_API {
 				unset( $attrs['value'] );
 
 				ob_start();
-				wp_editor( $element['#value'], $element['#id'] );
+				wp_editor( $element['#value'], $element['#id'], array( 'textarea_name' => $element['#name'] ) );
 				$element['#content'] = ob_get_clean();
 
 				break;
