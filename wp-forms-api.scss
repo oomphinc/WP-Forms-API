@@ -2,13 +2,13 @@
  * Generic forms in Meta Boxes
  */
 .wp-form {
-	overflow: hidden;
-	margin: .5em 0;
-	clear: both;
+  overflow: hidden;
+  margin: .5em 0;
+  clear: both;
 
-	.inside > & {
-		margin: 0;
-	}
+  .inside > & {
+    margin: 0;
+  }
 }
 
 .wp-form-label {
@@ -28,7 +28,7 @@
 }
 
 .wp-form-type-mce {
-	display: block;
+  display: block;
 }
 
 .wp-form-type-text, .wp-form-type-textarea {
@@ -83,6 +83,11 @@
   ol {
     margin: 0;
     padding: 0;
+    list-style-position: inside;
+
+    li {
+      background-color: #fff;
+    }
   }
 
   .wp-form-multiple-item {
@@ -102,6 +107,10 @@
     display: inline;
     content: "+ ";
   }
+}
+
+.wp-form-radio-group label {
+  margin: .5em 1em;
 }
 
 /**
