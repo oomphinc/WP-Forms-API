@@ -24,12 +24,21 @@
 				$list.find('> li').each(function(i) {
 					var $item = $(this);
 
-					$item.html($item.html()
+					$item.find('*').each(function() {
 						// Replace patterns like -2- or [4] with -$index- and [$index] in attributes
 						// Not exactly super safe, but easy
-						.replace(/(="[ \w_\[\]-]+[\[-])\d+([\]-][ \w_\[\]-]+")/g, '$1' + i + '$2'));
+						for(var j = 0; j < this.attributes.length; j++) {
+							this.attributes[j].value = this.attributes[j].value.replace(
+								/([ \w_\[\]-]+[\[-])\d+([\]-][ \w_\[\]-]+)/g, '$1' + i + '$2');
+						}
+					});
 				});
 			}
+
+			$container.find('.wp-form-multiple-list').sortable({
+				handle: '.sort-multiple-item',
+				update: reindex
+			});
 
 			$container
 				// Add a new multiple item on click
@@ -38,7 +47,7 @@
 						count = $list.children('li').length,
 						$html = $($tmpl.text().replace(/%INDEX%/g, count));
 
-					initializeAttachments($html);
+					initialize($html);
 
 					$list.append($html);
 				})

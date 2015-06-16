@@ -49,7 +49,7 @@ class WP_Forms_API {
 	 * @action init
 	 */
 	static function init() {
-		wp_register_script( 'wp-forms', plugins_url( 'wp-forms-api.js', 'wp-forms-api' ), array( 'jquery-ui-autocomplete' ), 1, true );
+		wp_register_script( 'wp-forms', plugins_url( 'wp-forms-api.js', 'wp-forms-api' ), array( 'jquery-ui-autocomplete', 'jquery-ui-sortable' ), 1, true );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'admin_enqueue' ) );
 		add_action( 'wp_ajax_wp_form_search_posts', array( __CLASS__, 'search_posts' ) );
 		add_action( 'wp_ajax_wp_form_search_terms', array( __CLASS__, 'search_terms' ) );
@@ -320,6 +320,7 @@ class WP_Forms_API {
 	 * 	'composite' - A composite value which is posted as an array in #key
 	 * 	'image' - An image selection field
 	 * 	'attachment' - An attachment selection field
+	 * 	'radio' - A radio button
 	 * 	'multiple' - A zero-to-infinity multiple value defined in #multiple key
 	 * 	'markup' - Literal markup. Specify markup value in #markup key.
 	 * 	'post_select' - A post selection field. Can specify types in #post_type key.
@@ -437,6 +438,33 @@ class WP_Forms_API {
 
 				if( $element['#value'] ) {
 					$attrs['checked'] = 'checked';
+				}
+
+				break;
+
+			case 'radio':
+				if( !$element['#options'] ) {
+					$element['#options'] = array( 'No', 'Yes' );
+				}
+
+				$element['#tag'] = 'div';
+				$element['#class'][] = 'wp-form-radio-group';
+				$element['#content'] = '';
+
+				foreach( $element['#options'] as $value => $label ) {
+					$radio_attrs = array(
+						'type' => 'radio',
+						'name' => $element['#name'],
+						'value' => $value
+					);
+
+					if( $value === $element['#value'] || $value === $element['#default'] ) {
+						$radio_attrs['checked'] = 'checked';
+					}
+
+					$element['#content'] .= self::make_tag( 'label', array(
+						'for' => $element['#slug'] . '-' . $value,
+					), self::make_tag( 'input', $radio_attrs, $label ) );
 				}
 
 				break;
@@ -673,11 +701,15 @@ class WP_Forms_API {
 			$values = array();
 		}
 
+		$multiple_ui =
+			self::make_tag( 'span', array( 'class' => 'dashicons dashicons-dismiss remove-multiple-item' ), '' ) .
+			self::make_tag( 'span', array( 'class' => 'dashicons dashicons-sort sort-multiple-item' ), '' );
+
 		// First, render a JavaScript template which can be filled out.
 		// JavaScript replaces %INDEX% with the actual index. Indexes are used
 		// to ensure the correct order and grouping when the values come back out in PHP
 		$template = self::make_tag( 'li', array( 'class' => implode( ' ', $item_classes ) ),
-			self::make_tag('a', array( 'class' => 'remove-multiple-item' ), $element['#remove_link'] ) .
+			$multiple_ui .
 			self::render_form( $multiple, $blank_values ) );
 
 		$markup = self::make_tag( 'script', array( 'type' => "text/html", 'id' => $template_id ), $template );
@@ -692,10 +724,10 @@ class WP_Forms_API {
 			}
 
 			$multiple['#index'] = $index;
-			$multiple['#slug'] = $element['#slug'] . '-' . $index;
+			$multiple['#slug'] = $element['#slug'];
 
 			$list_items .= self::make_tag( 'li', array( 'class' => implode( ' ', $item_classes ) ),
-				self::make_tag( 'a', array( 'class' => 'remove-multiple-item' ), $element['#remove_link'] ) .
+				$multiple_ui .
 				self::render_form( $multiple, $value ) );
 		}
 
