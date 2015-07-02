@@ -21,6 +21,11 @@
 			  $tmpl = $('#' + $container.data('template'));
 
 			function reindex() {
+				// Note which elements are checked to prevent radio buttons from losing
+				// their checked state when elements are renamed (and there is a brief
+				// name collision!)
+				var $checked = $list.find(':checked');
+
 				$list.find('> li').each(function(i) {
 					var $item = $(this);
 
@@ -33,6 +38,8 @@
 						}
 					});
 				});
+
+				$checked.prop('checked', true);
 			}
 
 			$container.find('.wp-form-multiple-list').sortable({
