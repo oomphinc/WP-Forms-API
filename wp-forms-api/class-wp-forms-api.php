@@ -49,7 +49,7 @@ class WP_Forms_API {
 	 * @action init
 	 */
 	static function init() {
-		wp_register_script( 'wp-forms', plugins_url( 'wp-forms-api.js', 'wp-forms-api' ), array( 'jquery-ui-autocomplete', 'jquery-ui-sortable' ), 1, true );
+		wp_register_script( 'wp-forms', plugins_url( 'wp-forms-api.js', __FILE__ ), array( 'jquery-ui-autocomplete', 'jquery-ui-sortable' ), 1, true );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'admin_enqueue' ) );
 		add_action( 'wp_ajax_wp_form_search_posts', array( __CLASS__, 'search_posts' ) );
 		add_action( 'wp_ajax_wp_form_search_terms', array( __CLASS__, 'search_terms' ) );
@@ -130,7 +130,7 @@ class WP_Forms_API {
 	 * @action admin_enqueue_scripts
 	 */
 	static function admin_enqueue() {
-		wp_enqueue_style( 'wp-forms', plugins_url( 'wp-forms-api.css', 'wp-forms-api' ) );
+		wp_enqueue_style( 'wp-forms', plugins_url( 'wp-forms-api.css', __FILE__ ) );
 	}
 
 	/**
