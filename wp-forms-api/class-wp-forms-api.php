@@ -755,6 +755,9 @@ class WP_Forms_API {
 			$input = &$_POST;
 		}
 
+		// avoid double slashing
+		$input = stripslashes_deep( $input );
+
 		$form = apply_filters_ref_array( 'wp_form_process', array( &$form, &$values, &$input ) );
 
 		foreach( self::get_elements( $form ) as $key => $element ) {
