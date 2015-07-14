@@ -12,6 +12,14 @@
  **********************************************/
 class WP_Forms_API {
 	/**
+	 * Refers to the base URL to the library.
+	 *
+	 * @access protected
+	 * @var string
+	 */
+	protected static $url = '';
+
+	/**
 	 * The defaults for all elements
 	 */
 	static $element_defaults = array(
@@ -49,11 +57,52 @@ class WP_Forms_API {
 	 * @action init
 	 */
 	static function init() {
-		wp_register_script( 'wp-forms', plugins_url( 'wp-forms-api.js', __FILE__ ), array( 'jquery-ui-autocomplete', 'jquery-ui-sortable' ), 1, true );
+		wp_register_script( 'wp-forms', self::url( 'wp-forms-api.js' ), array( 'jquery-ui-autocomplete', 'jquery-ui-sortable' ), 1, true );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'admin_enqueue' ) );
 		add_action( 'wp_ajax_wp_form_search_posts', array( __CLASS__, 'search_posts' ) );
 		add_action( 'wp_ajax_wp_form_search_terms', array( __CLASS__, 'search_terms' ) );
 		add_action( 'print_media_templates', array( __CLASS__, 'media_templates' ) );
+	}
+
+	/**
+	 * Sets the base URL to the library.
+	 *
+	 * There are times when hosting company's use symlinks to point to theme
+	 * and plugin directories and, unfortunately, these symlinks break wp core
+	 * functions. If you are having issues with wp-forms-api CSS and JS files
+	 * not loading, you can set the base URL to your plugin or theme using
+	 * this method.
+	 *
+	 * @see https://make.wordpress.org/core/2014/04/14/symlinked-plugins-in-wordpress-3-9/
+	 * @see https://core.trac.wordpress.org/ticket/13550
+	 *
+	 * @access public
+	 *
+	 * @param string $path A full URL to the theme or plugin where the
+	 * wp-forms-api is being used.
+	 */
+	static function set_url( $url ) {
+		self::$url = trailingslashit( $url );
+	}
+
+	/**
+	 * Gets the base URL to the library with an optional file path appended to it.
+	 *
+	 * @access public
+	 *
+	 * @param string $file Optional.
+	 *
+	 * @return string
+	 */
+	static function url( $file = '' ) {
+		$filepath = ltrim( $file, '/' );
+
+		if ( empty( self::$url ) ) {
+			// autodetect the base URL to the wp-forms-api directory
+			self::$url = plugins_url( $file, __FILE__ );
+		}
+
+		return self::$url . $filepath;
 	}
 
 	/**
@@ -130,7 +179,7 @@ class WP_Forms_API {
 	 * @action admin_enqueue_scripts
 	 */
 	static function admin_enqueue() {
-		wp_enqueue_style( 'wp-forms', plugins_url( 'wp-forms-api.css', __FILE__ ) );
+		wp_enqueue_style( 'wp-forms', self::url( 'wp-forms-api.css' ) );
 	}
 
 	/**
