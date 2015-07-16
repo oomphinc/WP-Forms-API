@@ -11,13 +11,6 @@
  * and generates markup with plenty of classes for styling on.
  **********************************************/
 class WP_Forms_API {
-	/**
-	 * Refers to the base URL to the library.
-	 *
-	 * @access protected
-	 * @var string
-	 */
-	protected static $url = '';
 
 	/**
 	 * The defaults for all elements
@@ -65,28 +58,18 @@ class WP_Forms_API {
 	}
 
 	/**
-	 * Sets the base URL to the library.
+	 * Gets the base URL to the library with an optional file path appended to it.
+	 *
+	 * Assumes this is a standard installed plugin to determine the proper base URL path for assets.
+	 * If it is not, the wp_form_base_url filter should be used to alter the path.
+	 *
+	 * More info:
 	 *
 	 * There are times when hosting company's use symlinks to point to theme
 	 * and plugin directories and, unfortunately, these symlinks break wp core
 	 * functions. If you are having issues with wp-forms-api CSS and JS files
 	 * not loading, you can set the base URL to your plugin or theme using
 	 * this method.
-	 *
-	 * @see https://make.wordpress.org/core/2014/04/14/symlinked-plugins-in-wordpress-3-9/
-	 * @see https://core.trac.wordpress.org/ticket/13550
-	 *
-	 * @access public
-	 *
-	 * @param string $path A full URL to the theme or plugin where the
-	 * wp-forms-api is being used.
-	 */
-	static function set_url( $url ) {
-		self::$url = trailingslashit( $url );
-	}
-
-	/**
-	 * Gets the base URL to the library with an optional file path appended to it.
 	 *
 	 * @access public
 	 *
@@ -97,12 +80,9 @@ class WP_Forms_API {
 	static function url( $file = '' ) {
 		$filepath = ltrim( $file, '/' );
 
-		if ( empty( self::$url ) ) {
-			// autodetect the base URL to the wp-forms-api directory
-			self::$url = plugins_url( $file, __FILE__ );
-		}
+		$url = trailingslashit( apply_filters( 'wp_form_base_url', plugins_url( '/', __FILE__ ) ) );
 
-		return self::$url . $filepath;
+		return $url . $filepath;
 	}
 
 	/**
