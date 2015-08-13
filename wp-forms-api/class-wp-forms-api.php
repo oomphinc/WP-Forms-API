@@ -15,31 +15,83 @@ class WP_Forms_API {
 	 * The defaults for all elements
 	 */
 	static $element_defaults = array(
+		// The id attribute of the input element
 		'#id' => '',
+
+		// The type of input element
 		'#type' => null,
+
+		// The key of this input element, matching the form key.
 		'#key' => '',
+
+		// The slug of this input element, built heirarchically.
 		'#slug' => '',
+
+		// The name of this input element. Typically derived from the key in the form.
 		'#name' => '',
+
+		// Reference to the top-level form
 		'#form' => null,
+
+		// Input placeholder
 		'#placeholder' => null,
+
+		// Default value
 		'#default' => null,
+
+		// Text field size
 		'#size' => null,
+
+		// Select / Multi-select options, value => label
 		'#options' => array(),
+
+		// Value used for checkboxes
+		'#checked' => '1',
+
+		// Container used for this element
 		'#container' => 'div',
+
+		// Classes applied to this container
 		'#container_classes' => array(),
 		'#markup' => '',
+
+		// Attributes on the input element
 		'#attrs' => array(),
+
+		// Classes applied to the input element
 		'#class' => array(),
+
+		// The label to attach to this element
 		'#label' => null,
+
+		// The textual description of this element
 		'#description' => null,
+
+		// Whether or not a value is required
 		'#required' => false,
+
+		// When #type=multiple, the index of this particular element in the set
 		'#index' => null,
+
+		// For #type=select fields, allow multiple values to be selected
+		// For #type=multiple, the form that can capture multiple values
 		'#multiple' => null,
+
+		// The content of the input tag, when applicable
 		'#content' => null,
+
+		// Add / Remove link text for multi-value elements
 		'#add_link' => 'Add item',
 		'#remove_link' => 'Remove item',
+
+		// Tag name of element. Typically derived from `#type`
 		'#tag' => '',
+
+		// Value of element. Typically filled in with process_form()
 		'#value' => null,
+
+		// Whether or not to allow HTML in an input value. Sanitizes using
+		// wp_kses_post
 		'#allow_html' => false,
 	);
 
