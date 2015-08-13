@@ -485,10 +485,10 @@ class WP_Forms_API {
 				break;
 
 			case 'checkbox':
-				$attrs['value'] =	'1';
+				$attrs['value'] = $element['#checked'];
 				$element['#content'] = null;
 
-				if( $element['#value'] ) {
+				if ( $element['#value'] === $element['#checked'] ) {
 					$attrs['checked'] = 'checked';
 				}
 
