@@ -72,96 +72,98 @@
 	});
 
 	// Image field
-	var WPFormImageField = media.View.extend({
-		template: media.template('wp-form-attachment-field'),
-		events: {
-			'change .wp-form-attachment-id': 'update',
-			'click .attachment-delete': 'removeAttachment',
-			'click .attachment-container': 'selectAttachment'
-		},
+	if (media && typeof media == 'object') {
+		var WPFormImageField = media.View.extend({
+			template: media.template('wp-form-attachment-field'),
+			events: {
+				'change .wp-form-attachment-id': 'update',
+				'click .attachment-delete': 'removeAttachment',
+				'click .attachment-container': 'selectAttachment'
+			},
 
-		selectAttachment: function() {
-			var view = this,
-				frameOpts = {
-					frame: 'select',
-					title: this.input_type == 'image' ? "Select Image" : "Select Attachment"
-				};
+			selectAttachment: function() {
+				var view = this,
+					frameOpts = {
+						frame: 'select',
+						title: this.input_type == 'image' ? "Select Image" : "Select Attachment"
+					};
 
-			if(this.input_type == 'image') {
-				frameOpts.library = { type: 'image' };
-			}
+				if(this.input_type == 'image') {
+					frameOpts.library = { type: 'image' };
+				}
 
-			media.frame = media(frameOpts).open();
+				media.frame = media(frameOpts).open();
 
-			media.frame.on('select', function(el) {
-				var image = this.get('library').get('selection').single();
+				media.frame.on('select', function(el) {
+					var image = this.get('library').get('selection').single();
 
-				view.model.set(image.attributes);
-			});
-		},
-
-		removeAttachment: function() {
-			this.model.clear();
-		},
-
-		initialize: function() {
-			if(!this.model) {
-				this.model = new Backbone.Model();
-			}
-
-			this.model.on('change', this.render, this);
-		},
-
-		prepare: function() {
-			var data = this.model.toJSON();
-
-			data.input_name = this.input_name;
-			data.input_type = this.input_type;
-
-			return data;
-		},
-
-		update: function() {
-			var view = this,
-				$field = this.$el.find('.wp-form-attachment-id'),
-				attachmentId = $field.val(),
-				attachment = media.model.Attachment.get(attachmentId).clone();
-
-			view.model.clear({ silent: true });
-			view.model.set({ id: attachmentId });
-
-			$field.addClass('ui-dirty');
-
-			attachment.fetch()
-				.done(function() {
-					$field.removeClass('ui-dirty');
-					view.model.set(this.attributes);
-				})
-				.fail(function() {
-					$field.addClass('ui-dirty');
+					view.model.set(image.attributes);
 				});
-		}
-	});
+			},
 
-	var initializeAttachments = function(context) {
-		$(context).find('.select-attachment-field').each(function() {
-			var view = new WPFormImageField({
-				model: media.model.Attachment.get(this.value).clone()
-			});
+			removeAttachment: function() {
+				this.model.clear();
+			},
 
-			view.model.fetch();
+			initialize: function() {
+				if(!this.model) {
+					this.model = new Backbone.Model();
+				}
 
-			// Don't save input name as part of the model as it should be invariant
-			view.input_name = this.name;
-			view.input_type = $(this).data('attachment-type');
+				this.model.on('change', this.render, this);
+			},
 
-			view.render();
+			prepare: function() {
+				var data = this.model.toJSON();
 
-			view.$el.attr('class', $(this).attr('class'));
-			view.$el.data('view', view);
+				data.input_name = this.input_name;
+				data.input_type = this.input_type;
 
-			$(this).replaceWith(view.$el);
+				return data;
+			},
+
+			update: function() {
+				var view = this,
+					$field = this.$el.find('.wp-form-attachment-id'),
+					attachmentId = $field.val(),
+					attachment = media.model.Attachment.get(attachmentId).clone();
+
+				view.model.clear({ silent: true });
+				view.model.set({ id: attachmentId });
+
+				$field.addClass('ui-dirty');
+
+				attachment.fetch()
+					.done(function() {
+						$field.removeClass('ui-dirty');
+						view.model.set(this.attributes);
+					})
+					.fail(function() {
+						$field.addClass('ui-dirty');
+					});
+			}
 		});
+
+		var initializeAttachments = function(context) {
+			$(context).find('.select-attachment-field').each(function() {
+				var view = new WPFormImageField({
+					model: media.model.Attachment.get(this.value).clone()
+				});
+
+				view.model.fetch();
+
+				// Don't save input name as part of the model as it should be invariant
+				view.input_name = this.name;
+				view.input_type = $(this).data('attachment-type');
+
+				view.render();
+
+				view.$el.attr('class', $(this).attr('class'));
+				view.$el.data('view', view);
+
+				$(this).replaceWith(view.$el);
+			});
+		}
 	}
 
 	var initializePostSelect = function(context, args) {
@@ -296,7 +298,10 @@
 	}
 
 	function initialize(context) {
-		initializeAttachments(context);
+		if (media && typeof media == 'object') {
+			initializeAttachments(context);
+		}
+
 		initializePostSelect(context);
 		initializeTermSelect(context);
 	}
@@ -306,7 +311,11 @@
 	});
 
 	fapi.setup = initialize;
-	fapi.initializeAttachments = initializeAttachments;
+
+	if (media && typeof media == 'object') {
+		fapi.initializeAttachments = initializeAttachments;
+	}
+
 	fapi.initializePostSelect = initializePostSelect;
 	fapi.initializeTermSelect = initializeTermSelect;
 })(jQuery);
