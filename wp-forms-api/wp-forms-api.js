@@ -297,6 +297,51 @@
 		});
 	}
 
+	function initializeConditionalLogic(context) {
+		$(context).find('[data-conditional-element]').each(function() {
+			$(this).on('change', conditionalLogicInputChange);
+			conditionalLogicInputChange.apply(this);
+		});
+	}
+
+	function conditionalLogicInputChange() {
+		var $this      = $(this)
+		  , target     = $this.data('conditional-element')
+	  	  , value      = $this.data('conditional-value')
+	  	  , action     = $this.data('conditional-action')
+	  	  , $target    = $(target)
+	  	  , inputValue = $this.val();
+
+	  	if ($target.length == 0) {
+	  		// Bail - target element doesn't exist
+	  		return;
+	  	}
+
+	  	// For checkboxes, we can not use .val() because it will always
+	  	// return the value attribute regardless if the checkbox is checked
+		if ($this.is(':checkbox') && !$this.is(':checked')) {
+			inputValue = false;
+		}
+
+		if (action == 'show') {
+			if (value == inputValue) {
+				$target.show();
+			}
+			else {
+				$target.hide();
+			}
+		}
+		
+		if (action == 'hide') {
+			if (value == inputValue) {
+				$target.hide();
+			}
+			else {
+				$target.show();
+			}
+		}
+	}
+
 	function initialize(context) {
 		if (media && typeof media == 'object') {
 			initializeAttachments(context);
@@ -304,6 +349,7 @@
 
 		initializePostSelect(context);
 		initializeTermSelect(context);
+		initializeConditionalLogic(context);
 	}
 
 	$(function() {
@@ -318,4 +364,5 @@
 
 	fapi.initializePostSelect = initializePostSelect;
 	fapi.initializeTermSelect = initializeTermSelect;
+	fapi.initializeConditionalLogic = initializeConditionalLogic;
 })(jQuery);

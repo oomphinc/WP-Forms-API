@@ -94,6 +94,11 @@ class WP_Forms_API {
 		// Whether or not to allow HTML in an input value. Sanitizes using
 		// wp_kses_post
 		'#allow_html' => false,
+
+		// Conditional logic. Used to conditional show/hide elements depending
+		// on the field's value. NOTE: Can only be used on elements that trigger a
+		// change event.
+		'#conditional' => array( 'element' => null, 'value' => null, 'action' => null ),
 	);
 
 	/**
@@ -505,6 +510,12 @@ class WP_Forms_API {
 
 			if( $element['#size'] ) {
 				$attrs['size'] = $element['#size'];
+			}
+
+			if( $element['#conditional']['element'] && $element['#conditional']['action'] && $element['#conditional']['value'] ) {
+				$attrs['data-conditional-element'] = $element['#conditional']['element'];
+				$attrs['data-conditional-action'] = $element['#conditional']['action'];
+				$attrs['data-conditional-value'] = $element['#conditional']['value'];
 			}
 
 			// Adjust form element attributes based on input type
