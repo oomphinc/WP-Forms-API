@@ -65,6 +65,9 @@ class WP_Forms_API {
 		// The label to attach to this element
 		'#label' => null,
 
+		// The label's position -- either "before" or "after"
+		'#label_position' => 'before',
+
 		// The textual description of this element
 		'#description' => null,
 
@@ -512,6 +515,7 @@ class WP_Forms_API {
 				$attrs['size'] = $element['#size'];
 			}
 
+			// Conditional logic
 			if( $element['#conditional']['element'] && $element['#conditional']['action'] && $element['#conditional']['value'] ) {
 				$attrs['data-conditional-element'] = $element['#conditional']['element'];
 				$attrs['data-conditional-action'] = $element['#conditional']['action'];
@@ -527,6 +531,7 @@ class WP_Forms_API {
 			case 'checkbox':
 				$attrs['value'] = $element['#checked'];
 				$element['#content'] = null;
+				$element['#label_position'] = 'after';
 
 				if ( $element['#value'] === $element['#checked'] ) {
 					$attrs['checked'] = 'checked';
@@ -542,6 +547,7 @@ class WP_Forms_API {
 				$element['#tag'] = 'div';
 				$element['#class'][] = 'wp-form-radio-group';
 				$element['#content'] = '';
+				$element['#label_position'] = 'after';
 
 				foreach( $element['#options'] as $value => $label ) {
 					$radio_attrs = array(
@@ -697,8 +703,9 @@ class WP_Forms_API {
 
 		$markup = '';
 
+		$label = '';
 		if( isset( $element['#label'] ) ) {
-			$markup .= self::make_tag( 'label', array(
+			$label = self::make_tag( 'label', array(
 				'class' => 'wp-form-label',
 				'for' => $input_id,
 			), esc_html( $element['#label'] ) );
@@ -712,7 +719,9 @@ class WP_Forms_API {
 		}
 		// Tagname may have been unset (such as in a composite value)
 		else if( $element['#tag'] ) {
+			$markup .= $element['#label_position'] == 'before' ? $label : '';
 			$markup .= self::make_tag( $element['#tag'], $element['#attrs'], $element['#content'] );
+			$markup .= $element['#label_position'] == 'after' ? $label : '';
 		}
 
 		if( $element['#description'] ) {
