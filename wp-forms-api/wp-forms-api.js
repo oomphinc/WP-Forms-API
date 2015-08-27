@@ -72,7 +72,7 @@
 	});
 
 	// Image field
-	if (media && typeof media == 'object') {
+	if (media && typeof media == 'function') {
 		var WPFormImageField = media.View.extend({
 			template: media.template('wp-form-attachment-field'),
 			events: {
@@ -343,7 +343,7 @@
 	}
 
 	function initialize(context) {
-		if (media && typeof media == 'object') {
+		if (media && typeof media == 'function') {
 			initializeAttachments(context);
 		}
 
@@ -358,7 +358,7 @@
 
 	fapi.setup = initialize;
 
-	if (media && typeof media == 'object') {
+	if (media && typeof media == 'function') {
 		fapi.initializeAttachments = initializeAttachments;
 	}
 
