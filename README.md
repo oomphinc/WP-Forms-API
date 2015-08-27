@@ -273,6 +273,14 @@ When using #multiple, the text to show for the "Remove Item" button.
 
 For `#type = 'post_select'`, the space-separated list of valid post types to search against.
 
+* `#conditional` (array)
+
+Show or hide elements depending on the element's value. Please note that conditional logic only works on input types that trigger a Javascript change event (e.g. select menus, checkboxes, radios, etc)
+
+* `element` – A jQuery-esk selector for the element that should react to changes to this element's value (e.g. `#element-id`, `.element-class`, etc).
+* `action` - The action perform on the element. Either 'show' or 'hide'.
+* `value` - If the value of the input is this value, then show|hide the target element.
+
 ### Filterable element properties
 
 These properties should only be modified in the `wp_form_element` filter.
@@ -284,14 +292,6 @@ Any content to put in the input tag. Additional content from rendering the tag w
 *  `#tag` (string)
 
 The actual tag name to use for the input.
-
-* `#conditional` (array)
-
-Show or hide elements depending on the element's value. Please note that conditional logic only works on input types that trigger a Javascript change event (e.g. select menus, checkboxes, radios, etc)
-
-* `element` – A jQuery-esk selector for the element that should react to changes to this element's value (e.g. `#element-id`, `.element-class`, etc).
-* `action` - The action perform on the element. Either 'show' or 'hide'.
-* `value` - If the value of the input is this value, then show|hide the target element.
 
 ### Rendered Input Names
 
