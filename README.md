@@ -6,7 +6,7 @@
 
 *A Drupal-esque API for creating and processing forms in WordPress.*
 
-Provides a `WP_Forms_API` class composed of static methods which can be used to render forms defined by arbitrary data structures. You can also process the results submitted in those forms into a coherent set of values, smoothing over data types, validation (TODO: not yet!!) and allowing for functional integration into WordPress using filters.
+Provides a `WP_Forms_API` class composed of static methods which can be used to render forms defined by arbitrary data structures. You can also process the results submitted in those forms into a coherent set of values, smoothing over data types, validation (TODO: not yet!!), conditional logic and allowing for functional integration into WordPress using filters.
 
 ## Why?
 
@@ -226,7 +226,7 @@ When present, indicates that the element is an input element. Values:
 * `'image'` - An image from the media library
 * `'post_select'` - A post
 
-* Any other value will be rendered as a text input. You can use custom types along with the `wp_form_element` filter to define input tag types 
+* Any other value will be rendered as a text input. You can use custom types along with the `wp_form_element` filter to define input tag types
 
 *  `#key` (string)
 
@@ -284,6 +284,14 @@ Any content to put in the input tag. Additional content from rendering the tag w
 *  `#tag` (string)
 
 The actual tag name to use for the input.
+
+* `#conditional` (array)
+
+Show or hide elements depending on the element's value. Please note that conditional logic only works on input types that trigger a Javascript change event (e.g. select menus, checkboxes, radios, etc)
+
+* `element` – A jQuery-esk selector for the element that should react to changes to this element's value (e.g. `#element-id`, `.element-class`, etc).
+* `action` - The action perform on the element. Either 'show' or 'hide'.
+* `value` - If the value of the input is this value, then show|hide the target element.
 
 ### Rendered Input Names
 
