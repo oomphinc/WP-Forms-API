@@ -743,7 +743,7 @@ class WP_Forms_API {
 			$option_atts = array( 'value' => $value );
 
 			if( $element['#multiple'] && in_array( $value, $element['#value'] ) ||
-					$value == $element['#value'] ) {
+					(string) $value === (string) $element['#value'] ) {
 				$option_atts['selected'] = "selected";
 			}
 
