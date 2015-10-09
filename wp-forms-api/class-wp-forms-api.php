@@ -110,7 +110,7 @@ class WP_Forms_API {
 	 * @action init
 	 */
 	static function init() {
-		wp_register_script( 'wp-forms', self::url( 'wp-forms-api.js' ), array( 'jquery-ui-autocomplete', 'jquery-ui-sortable' ), 1, true );
+		wp_register_script( 'wp-forms', self::url( 'wp-forms-api.js' ), array( 'jquery-ui-autocomplete', 'jquery-ui-sortable', 'backbone', 'wp-util' ), 1, true );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'admin_enqueue' ) );
 		add_action( 'wp_ajax_wp_form_search_posts', array( __CLASS__, 'search_posts' ) );
 		add_action( 'wp_ajax_wp_form_search_terms', array( __CLASS__, 'search_terms' ) );
