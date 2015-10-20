@@ -573,7 +573,7 @@ class WP_Forms_API {
 				if( $element['#multiple'] ) {
 					$attrs['multiple'] = 'multiple';
 					$attrs['name'] .= '[]';
-					$element['#value'] = (array) $element['#value'];
+					$element['#value'] = array_map( 'strval', (array) $element['#value'] );
 				}
 
 				if( !$element['#required'] ) {
@@ -714,8 +714,9 @@ class WP_Forms_API {
 		foreach( $options as $value => $label ) {
 			$option_atts = array( 'value' => $value );
 
-			if( $element['#multiple'] && in_array( $value, $element['#value'] ) ||
-					$value == $element['#value'] ) {
+			if( isset( $element['#value'] ) &&
+				( ( $element['#multiple'] && in_array( (string) $value, $element['#value'] ) ) ||
+					(string) $value === (string) $element['#value'] ) ) {
 				$option_atts['selected'] = "selected";
 			}
 
