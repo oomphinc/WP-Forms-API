@@ -110,39 +110,11 @@ class WP_Forms_API {
 	 * @action init
 	 */
 	static function init() {
-		wp_register_script( 'wp-forms', self::url( 'wp-forms-api.js' ), array( 'jquery-ui-autocomplete', 'jquery-ui-sortable', 'backbone', 'wp-util' ), 1, true );
+		wp_register_script( 'wp-forms', plugins_url( 'wp-forms-api.js', __FILE__ ), array( 'jquery-ui-autocomplete', 'jquery-ui-sortable', 'backbone', 'wp-util' ), 1, true );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'admin_enqueue' ) );
 		add_action( 'wp_ajax_wp_form_search_posts', array( __CLASS__, 'search_posts' ) );
 		add_action( 'wp_ajax_wp_form_search_terms', array( __CLASS__, 'search_terms' ) );
 		add_action( 'print_media_templates', array( __CLASS__, 'media_templates' ) );
-	}
-
-	/**
-	 * Gets the base URL to the library with an optional file path appended to it.
-	 *
-	 * Assumes this is a standard installed plugin to determine the proper base URL path for assets.
-	 * If it is not, the wp_form_base_url filter should be used to alter the path.
-	 *
-	 * More info:
-	 *
-	 * There are times when hosting company's use symlinks to point to theme
-	 * and plugin directories and, unfortunately, these symlinks break wp core
-	 * functions. If you are having issues with wp-forms-api CSS and JS files
-	 * not loading, you can set the base URL to your plugin or theme using
-	 * this method.
-	 *
-	 * @access public
-	 *
-	 * @param string $file Optional.
-	 *
-	 * @return string
-	 */
-	static function url( $file = '' ) {
-		$filepath = ltrim( $file, '/' );
-
-		$url = trailingslashit( apply_filters( 'wp_form_base_url', plugins_url( '/', __FILE__ ) ) );
-
-		return $url . $filepath;
 	}
 
 	/**
@@ -219,7 +191,7 @@ class WP_Forms_API {
 	 * @action admin_enqueue_scripts
 	 */
 	static function admin_enqueue() {
-		wp_enqueue_style( 'wp-forms', self::url( 'wp-forms-api.css' ) );
+		wp_enqueue_style( 'wp-forms', plugins_url( 'wp-forms-api.css', __FILE__ ) );
 	}
 
 	/**
