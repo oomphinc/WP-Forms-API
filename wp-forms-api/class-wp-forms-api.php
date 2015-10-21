@@ -871,7 +871,10 @@ class WP_Forms_API {
 			$values[$element['#key']] = array();
 
 			if( isset( $input[$element['#key']] ) && is_array( $input[$element['#key']] ) ) {
-				$element['#value'] = $input[$element['#key']];
+				foreach( $input[$element['#key']] as $item ) {
+					self::process_form( $element['#multiple'], $value, $item );
+					$values[$element['#key']][] = $value;
+				}
 			}
 		}
 		// Or just pull the value from the input
