@@ -8,13 +8,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/bendoh/WP-Forms-API"
+    "url": "https://github.com/oomphinc/WP-Forms-API"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "gulp": "^3.6.2",
-    "gulp-ruby-sass": "^0.5.0",
-    "gulp-watch": "^4.2.4"
+		"babel-brunch": "^5.1.1",
+		"brunch": "^1.8.1",
+		"clean-css-brunch": ">= 1.0 < 1.8",
+		"css-brunch": ">= 1.0 < 1.8",
+		"javascript-brunch": ">= 1.0 < 1.8",
+		"sass-brunch": "^1.8.10",
+		"uglify-js-brunch": ">= 1.0 < 1.8"
   }
 }

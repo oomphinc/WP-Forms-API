@@ -1,0 +1,18 @@
+{
+	"name": "oomphinc/wp-forms-api",
+	"description": "WP Forms API",
+	"license": "MIT",
+	"keywords": [ "wordpress", "forms", "drupal", "api" ],
+	"authors": [
+		{
+			"name": "Ben Doherty",
+			"email": "ben@thinkoomph.com"
+		}
+	],
+	"minimum-stability": "beta",
+	"require": {},
+	"autoload": {
+		"files": [ "plugin/wp-forms-api.php" ]
+		}
+	}
+}
