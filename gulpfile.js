@@ -5,14 +5,14 @@ var gulp = require('gulp'),
 
 // Styles
 gulp.task('styles', function() {
-	gulp.src('wp-forms-api.scss')
+	gulp.src('sass/wp-forms-api.scss')
 		.pipe(sass({style: 'compressed'}))
-		.pipe(gulp.dest('wp-forms-api'));
+		.pipe(gulp.dest('inc/'));
 });
 
 gulp.task('watch', function() {
 	// Watch the sass files
-	gulp.watch('**/*.scss', ['styles']);
+	gulp.watch('sass/**/*.scss', ['styles']);
 });
 
 // Run all tasks by default

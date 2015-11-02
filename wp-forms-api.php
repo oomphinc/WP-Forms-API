@@ -26,5 +26,5 @@ License: GPLv2 or later
 
 // Ensure only one instance of the WP_Forms_API is loaded at a time
 if ( ! class_exists( 'WP_Forms_API' ) ) {
-    require( __DIR__ . '/class-wp-forms-api.php' );
+    require( __DIR__ . '/inc/class-wp-forms-api.php' );
 }

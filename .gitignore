@@ -1,5 +1,5 @@
+inc/*.css
 *.log
 .htaccess
 .sass-cache
 node_modules
-wp-forms-api/*.css
