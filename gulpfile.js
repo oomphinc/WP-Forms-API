@@ -7,7 +7,7 @@ var gulp = require('gulp'),
 gulp.task('styles', function() {
 	gulp.src('sass/wp-forms-api.scss')
 		.pipe(sass({style: 'compressed'}))
-		.pipe(gulp.dest('src/'));
+		.pipe(gulp.dest('inc/'));
 });
 
 gulp.task('watch', function() {
