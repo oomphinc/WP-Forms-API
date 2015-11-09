@@ -102,6 +102,9 @@ class WP_Forms_API {
 		// on the field's value. NOTE: Can only be used on elements that trigger a
 		// change event.
 		'#conditional' => array( 'element' => null, 'value' => null, 'action' => null ),
+
+		// Whether to use only the array values passed to an options argument
+		'#labels_as_values' => false,
 	);
 
 	/**
@@ -577,7 +580,7 @@ class WP_Forms_API {
 				}
 
 				if( !$element['#required'] ) {
-					$options[''] = "- select -";
+					$options[''] = isset( $element['#placeholder'] ) ? $element['#placeholder'] : "- select -";
 				}
 
 				$options = $options + $element['#options'];
@@ -712,6 +715,10 @@ class WP_Forms_API {
 		$markup = '';
 
 		foreach( $options as $value => $label ) {
+			// ignore the value and use the label instead?
+			if ( $element['#labels_as_values'] && !is_array( $label ) ) {
+				$value = $label;
+			}
 			$option_atts = array( 'value' => $value );
 
 			if( isset( $element['#value'] ) &&
