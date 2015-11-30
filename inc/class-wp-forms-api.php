@@ -762,13 +762,8 @@ class WP_Forms_API {
 			'#type' => ''
 		);
 
-		$template_id = 'wp-form-tmpl-' . $element['#slug'];
-		$list_id = 'wp-multiple-list-' . $element['#slug'];
-
 		$container_atts = array(
 			'class' => 'wp-form-multiple wp-form-multiple-' . $element['#key'],
-			'data-template' => $template_id,
-			'data-list' => $list_id
 		);
 
 		// Placeholders filled in by JavaScript
@@ -793,7 +788,7 @@ class WP_Forms_API {
 			$multiple_ui .
 			self::render_form( $multiple, $blank_values ) );
 
-		$markup = self::make_tag( 'script', array( 'type' => "text/html", 'id' => $template_id ), $template );
+		$markup = self::make_tag( 'script', array( 'type' => "text/html", 'id' => $template_id, 'class' => 'wp-form-multiple-template' ), $template );
 
 		$list_items = '';
 

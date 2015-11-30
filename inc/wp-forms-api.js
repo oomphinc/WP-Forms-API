@@ -14,11 +14,12 @@
 	});
 
 	// Multiple-list field
-	$(function() {
-		$('.wp-form .wp-form-multiple').each(function() {
-			var $container = $(this),
-			  $list = $('#' + $container.data('list')),
-			  $tmpl = $('#' + $container.data('template'));
+	var initializeMultiple = function(context) {
+		$(context).find('.wp-form-multiple:not(.wp-form-initialized)').each(function() {
+			var $container = $(this)
+			  , $list = $container.find('.wp-form-multiple-list')
+			  , $tmpl = $container.find('.wp-form-multiple-template')
+			;
 
 			function reindex() {
 				// Note which elements are checked to prevent radio buttons from losing
@@ -42,7 +43,7 @@
 				$checked.prop('checked', true);
 			}
 
-			$container.find('.wp-form-multiple-list').sortable({
+			$list.sortable({
 				handle: '.sort-multiple-item',
 				update: reindex
 			});
@@ -68,8 +69,11 @@
 
 					reindex();
 				});
+
+			// prevent double init which would register multiple click handlers
+			$container.addClass('wp-form-initialized');
 		});
-	});
+	}
 
 	// Image field
 	if (media && typeof media == 'function') {
@@ -331,7 +335,7 @@
 				$target.hide();
 			}
 		}
-		
+
 		if (action == 'hide') {
 			if (value == inputValue) {
 				$target.hide();
@@ -350,6 +354,7 @@
 		initializePostSelect(context);
 		initializeTermSelect(context);
 		initializeConditionalLogic(context);
+		initializeMultiple(context);
 	}
 
 	$(function() {
@@ -365,4 +370,5 @@
 	fapi.initializePostSelect = initializePostSelect;
 	fapi.initializeTermSelect = initializeTermSelect;
 	fapi.initializeConditionalLogic = initializeConditionalLogic;
+	fapi.initializeMultiple = initializeMultiple;
 })(jQuery);
