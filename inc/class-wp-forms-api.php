@@ -788,7 +788,7 @@ class WP_Forms_API {
 			$multiple_ui .
 			self::render_form( $multiple, $blank_values ) );
 
-		$markup = self::make_tag( 'script', array( 'type' => "text/html", 'id' => $template_id, 'class' => 'wp-form-multiple-template' ), $template );
+		$markup = self::make_tag( 'script', array( 'type' => 'text/html', 'class' => 'wp-form-multiple-template' ), $template );
 
 		$list_items = '';
 
