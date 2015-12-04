@@ -807,7 +807,7 @@ class WP_Forms_API {
 				self::render_form( $multiple, $value ) );
 		}
 
-		$markup .= self::make_tag( 'ol', array( 'id' => $list_id, 'class' => 'wp-form-multiple-list' ), $list_items );
+		$markup .= self::make_tag( 'ol', array( 'class' => 'wp-form-multiple-list' ), $list_items );
 
 		// Render the "add" link
 		$markup .= self::make_tag( 'a', array( 'class' => 'add-multiple-item' ), $element['#add_link'] );
