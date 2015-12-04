@@ -716,7 +716,8 @@ class WP_Forms_API {
 
 		foreach( $options as $value => $label ) {
 			// ignore the value and use the label instead?
-			if ( $element['#labels_as_values'] && !is_array( $label ) ) {
+			// but not for a value of empty string, used for the placeholder option
+			if ( $element['#labels_as_values'] && !is_array( $label ) && $value !== '' ) {
 				$value = $label;
 			}
 			$option_atts = array( 'value' => $value );
