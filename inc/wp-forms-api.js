@@ -15,11 +15,15 @@
 
 	// Multiple-list field
 	var initializeMultiple = function(context) {
-		$(context).find('.wp-form-multiple:not(.wp-form-initialized)').each(function() {
+		$(context).find('.wp-form-multiple').each(function() {
 			var $container = $(this)
 			  , $list = $container.find('.wp-form-multiple-list')
 			  , $tmpl = $container.find('.wp-form-multiple-template')
 			;
+			// do not re-initialize
+			if ($container.data('initialized')) {
+				return;
+			}
 
 			function reindex() {
 				// Note which elements are checked to prevent radio buttons from losing
@@ -71,7 +75,7 @@
 				});
 
 			// prevent double init which would register multiple click handlers
-			$container.addClass('wp-form-initialized');
+			$container.data('initialized',true);
 		});
 	}
 
