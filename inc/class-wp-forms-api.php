@@ -478,7 +478,7 @@ class WP_Forms_API {
 
 			$element['#class'][] = 'wp-form-input';
 
-			if( is_scalar( $element['#value'] ) && strlen( $element['#value'] ) > 0 ) {
+			if( $element['#type'] !== 'checkbox' && is_scalar( $element['#value'] ) && strlen( $element['#value'] ) > 0 ) {
 				$attrs['value'] = $element['#value'];
 			}
 
@@ -504,7 +504,9 @@ class WP_Forms_API {
 				break;
 
 			case 'checkbox':
-				$attrs['value'] = $element['#checked'];
+				// value attribute is arbitrary, we will only be looking for presence of the key
+				// the #checked value will be used for the actual field value to save
+				$attrs += [ 'value' => '1' ];
 				$element['#content'] = null;
 				$element['#label_position'] = 'after';
 
@@ -856,9 +858,13 @@ class WP_Forms_API {
 		$values_root = &$values;
 		$input_root = &$input;
 
-		// Process checkbox or button value by simple presence of #key
-		if( $element['#type'] === 'checkbox' || self::is_button( $element ) ) {
+		// Process button value by simple presence of #key
+		if( self::is_button( $element ) ) {
 			$element['#value'] = isset( $input[$element['#key']] ) && $input[$element['#key']];
+		}
+		// Process checkbox by presence of #key, using the #checked value
+		else if ( $element['#type'] === 'checkbox' && isset( $input[$element['#key']] ) ) {
+			$element['#value'] = $element['#checked'];
 		}
 		// Munge composite elements
 		else if( $element['#type'] == 'composite' ) {
