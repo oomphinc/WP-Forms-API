@@ -1,0 +1,32 @@
+{
+    "name": "oomphinc/wp-forms-api",
+    "description": "Drupal-esque API for creating and munging forms in WordPress",
+    "homepage": "http://oomphinc.com/",
+    "type": "wordpress-muplugin",
+    "keywords": [ "wordpress", "forms", "fields", "elements", "api", "wp" ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Ben Doherty",
+            "homepage": "https://github.com/bendoh",
+            "role": "Developer"
+        },
+        {
+            "name": "Stephen Beemsterboer",
+            "homepage": "https://github.com/balbuf",
+            "role": "Developer"
+        },
+        {
+            "name": "Jonathan Cowher",
+            "homepage": "https://github.com/jcowher",
+            "role": "Developer"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/oomphinc/WP-Forms-API/issues",
+        "source": "https://github.com/oomphinc/WP-Forms-API"
+    },
+    "require": {
+        "oomphinc/composer-installers-extender": "^1.0"
+    }
+}

@@ -1,5 +1,3 @@
-inc/*.css
 *.log
 .htaccess
-.sass-cache
-node_modules
+vendor/
