@@ -4,7 +4,7 @@ Plugin Name: WP Forms API
 Description: Implement an API similar to Drupal's Forms API for rendering
 and processing forms.
 Author: Ben Doherty @ Oomph, Inc.
-Version: 0.4.3
+Version: 1.0
 Author URI: http://www.oomphinc.com/
 License: MIT
 
