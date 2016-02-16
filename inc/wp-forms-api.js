@@ -314,39 +314,29 @@
 
 	function conditionalLogicInputChange() {
 		var $this      = $(this)
-		  , target     = $this.data('conditional-element')
-	  	  , value      = $this.data('conditional-value')
-	  	  , action     = $this.data('conditional-action')
-	  	  , $target    = $(target)
-	  	  , inputValue = $this.val();
+		  , $target    = $($this.data('conditional-element'))
+		  , value      = $this.data('conditional-value')
+		  , action     = $this.data('conditional-action')
+		  , inputValue = $this.val()
+		;
 
-	  	if ($target.length == 0) {
-	  		// Bail - target element doesn't exist
-	  		return;
-	  	}
+		if (!$target.length) {
+			// Bail - target element doesn't exist
+			return;
+		}
 
-	  	// For checkboxes, we can not use .val() because it will always
-	  	// return the value attribute regardless if the checkbox is checked
+		// For checkboxes, we cannot use .val() because it will always
+		// return the value attribute regardless if the checkbox is checked
 		if ($this.is(':checkbox') && !$this.is(':checked')) {
 			inputValue = false;
 		}
 
-		if (action == 'show') {
-			if (value == inputValue) {
-				$target.show();
-			}
-			else {
-				$target.hide();
-			}
-		}
-
-		if (action == 'hide') {
-			if (value == inputValue) {
-				$target.hide();
-			}
-			else {
-				$target.show();
-			}
+		if (action === 'show') {
+			$target.toggle(value == inputValue);
+		} else if (action === 'hide') {
+			$target.toggle(value != inputValue);
+		} else if ((action=action.split(' ')) && action[0]==='toggleClass') {
+			$target.toggleClass(action[1], value == inputValue);
 		}
 	}
 

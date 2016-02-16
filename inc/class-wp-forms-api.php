@@ -491,7 +491,7 @@ class WP_Forms_API {
 			}
 
 			// Conditional logic
-			if( $element['#conditional']['element'] && $element['#conditional']['action'] && $element['#conditional']['value'] ) {
+			if( isset( $element['#conditional']['element'], $element['#conditional']['action'], $element['#conditional']['value'] ) ) {
 				$attrs['data-conditional-element'] = $element['#conditional']['element'];
 				$attrs['data-conditional-action'] = $element['#conditional']['action'];
 				$attrs['data-conditional-value'] = $element['#conditional']['value'];
