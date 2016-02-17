@@ -318,7 +318,7 @@
 		;
 
 		// no conditions? bail!
-		if (!conditions || typeof conditions !== 'object') return;
+		if (!(conditions instanceof Object)) return;
 
 		// for radios, we need to find the currently selected radio of the bunch
 		if ($this.attr('type')==='radio') {
@@ -328,7 +328,7 @@
 		// loop through conditions and apply classes
 		// { 'element value': { 'target selector': 'class to add', ... }, ... }
 		for (var value in conditions) {
-			if (conditions[value] && typeof conditions[value] === 'object') {
+			if (conditions[value] instanceof Object) {
 				for (var selector in conditions[value]) {
 					$(selector).toggleClass(conditions[value][selector], value == inputValue);
 				}
