@@ -321,7 +321,7 @@
 		if (!(conditions instanceof Object)) return;
 
 		// for radios, we need to find the currently selected radio of the bunch
-		if ($this.attr('type')==='radio') {
+		if ($this.attr('type') === 'radio') {
 			inputValue = $(document.getElementsByName($this.attr('name'))).find(':checked').val();
 		}
 
