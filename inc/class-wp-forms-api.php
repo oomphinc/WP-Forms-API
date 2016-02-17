@@ -101,7 +101,10 @@ class WP_Forms_API {
 		// Conditional logic. Used to conditional show/hide elements depending
 		// on the field's value. NOTE: Can only be used on elements that trigger a
 		// change event.
-		'#conditional' => array( 'element' => null, 'value' => null, 'action' => null ),
+		// Format:
+		// [ 'element value' => [ 'target selector' => 'class to add' ] ]
+		// Multiple element values and target selectors are allowed.
+		'#conditional' => null,
 
 		// Whether to use only the array values passed to an options argument
 		'#labels_as_values' => false,
@@ -490,11 +493,19 @@ class WP_Forms_API {
 				$attrs['size'] = $element['#size'];
 			}
 
-			// Conditional logic
-			if( $element['#conditional']['element'] && $element['#conditional']['action'] && $element['#conditional']['value'] ) {
-				$attrs['data-conditional-element'] = $element['#conditional']['element'];
-				$attrs['data-conditional-action'] = $element['#conditional']['action'];
-				$attrs['data-conditional-value'] = $element['#conditional']['value'];
+			// Backwards-compatible logic for conditional elements
+			if( isset( $element['#conditional']['element'], $element['#conditional']['action'], $element['#conditional']['value'] ) ) {
+				$element['#conditional'] = [
+					// [ element value => [] ]
+					$element['#conditional']['value'] => [
+						// [ target selector => class to apply ]
+						$element['#conditional']['element'] => 'wp-form-conditional-' . $element['#conditional']['action'],
+					],
+				];
+			}
+			// Conditional actions
+			if ( !empty( $element['#conditional'] ) ) {
+				$attrs['data-conditional'] = json_encode( $element['#conditional'] );
 			}
 
 			// Adjust form element attributes based on input type

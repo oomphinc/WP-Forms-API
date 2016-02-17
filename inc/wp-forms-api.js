@@ -306,46 +306,32 @@
 	}
 
 	function initializeConditionalLogic(context) {
-		$(context).find('[data-conditional-element]').each(function() {
-			$(this).on('change', conditionalLogicInputChange);
-			conditionalLogicInputChange.apply(this);
-		});
+		$(context).find('[data-conditional]:not(div), div[data-conditional] input[type=radio]').on('change', conditionalLogicInputChange).trigger('change');
 	}
 
 	function conditionalLogicInputChange() {
-		var $this      = $(this)
-		  , target     = $this.data('conditional-element')
-	  	  , value      = $this.data('conditional-value')
-	  	  , action     = $this.data('conditional-action')
-	  	  , $target    = $(target)
-	  	  , inputValue = $this.val();
+		var $this = $(this)
+		  , conditions = $this.closest('[data-conditional]').data('conditional')
+			// For checkboxes, we cannot use .val() because it will always
+			// return the value attribute regardless if the checkbox is checked
+		  , inputValue = $this.is(':checkbox:not(:checked)') ? false : $this.val()
+		;
 
-	  	if ($target.length == 0) {
-	  		// Bail - target element doesn't exist
-	  		return;
-	  	}
+		// no conditions? bail!
+		if (!(conditions instanceof Object)) return;
 
-	  	// For checkboxes, we can not use .val() because it will always
-	  	// return the value attribute regardless if the checkbox is checked
-		if ($this.is(':checkbox') && !$this.is(':checked')) {
-			inputValue = false;
+		// for radios, we need to find the currently selected radio of the bunch
+		if ($this.attr('type') === 'radio') {
+			inputValue = $(document.getElementsByName($this.attr('name'))).find(':checked').val();
 		}
 
-		if (action == 'show') {
-			if (value == inputValue) {
-				$target.show();
-			}
-			else {
-				$target.hide();
-			}
-		}
-
-		if (action == 'hide') {
-			if (value == inputValue) {
-				$target.hide();
-			}
-			else {
-				$target.show();
+		// loop through conditions and apply classes
+		// { 'element value': { 'target selector': 'class to add', ... }, ... }
+		for (var value in conditions) {
+			if (conditions[value] instanceof Object) {
+				for (var selector in conditions[value]) {
+					$(selector).toggleClass(conditions[value][selector], value == inputValue);
+				}
 			}
 		}
 	}

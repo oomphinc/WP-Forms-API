@@ -103,6 +103,23 @@
 }
 
 /**
+ * Styles for conditional show/hide
+ */
+.wp-form-conditional-show {
+	display: block !important;
+}
+input.wp-form-conditional-show,
+select.wp-form-conditional-show,
+textarea.wp-form-conditional-show,
+img.wp-form-conditional-show {
+	display: inline-block !important;
+}
+
+.wp-form-conditional-hide {
+	display: none !important;
+}
+
+/**
  * Attachment selection field, maybe image
  */
 .wp-form-type-attachment,
