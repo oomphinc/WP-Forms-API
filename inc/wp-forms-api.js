@@ -306,37 +306,28 @@
 	}
 
 	function initializeConditionalLogic(context) {
-		$(context).find('[data-conditional-element]').each(function() {
-			$(this).on('change', conditionalLogicInputChange);
-			conditionalLogicInputChange.apply(this);
-		});
+		$(context).find('[data-conditional]').on('change', conditionalLogicInputChange).trigger('change');
 	}
 
 	function conditionalLogicInputChange() {
-		var $this      = $(this)
-		  , $target    = $($this.data('conditional-element'))
-		  , value      = $this.data('conditional-value')
-		  , action     = $this.data('conditional-action')
-		  , inputValue = $this.val()
+		var $this = $(this)
+		  , conditions = $this.data('conditional')
+			// For checkboxes, we cannot use .val() because it will always
+			// return the value attribute regardless if the checkbox is checked
+		  , inputValue = $this.is(':checkbox:not(:checked)') ? false : $this.val()
 		;
 
-		if (!$target.length) {
-			// Bail - target element doesn't exist
-			return;
-		}
+		// no conditions? bail!
+		if (typeof conditions !== 'object') return;
 
-		// For checkboxes, we cannot use .val() because it will always
-		// return the value attribute regardless if the checkbox is checked
-		if ($this.is(':checkbox') && !$this.is(':checked')) {
-			inputValue = false;
-		}
-
-		if (action === 'show') {
-			$target.toggle(value == inputValue);
-		} else if (action === 'hide') {
-			$target.toggle(value != inputValue);
-		} else if ((action=action.split(' ')) && action[0]==='toggleClass') {
-			$target.toggleClass(action[1], value == inputValue);
+		// loop through conditions and apply classes
+		// { 'element value': { 'target selector': 'class to add', ... }, ... }
+		for (var value in conditions) {
+			if (typeof conditions[value] === 'object') {
+				for (var selector in conditions[value]) {
+					$(selector).toggleClass(conditions[value][selector], value == inputValue);
+				}
+			}
 		}
 	}
 
