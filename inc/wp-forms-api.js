@@ -306,12 +306,12 @@
 	}
 
 	function initializeConditionalLogic(context) {
-		$(context).find('[data-conditional]').on('change', conditionalLogicInputChange).trigger('change');
+		$(context).find('[data-conditional]:not(div), div[data-conditional] input[type=radio]').on('change', conditionalLogicInputChange).trigger('change');
 	}
 
 	function conditionalLogicInputChange() {
 		var $this = $(this)
-		  , conditions = $this.data('conditional')
+		  , conditions = $this.closest('[data-conditional]').data('conditional')
 			// For checkboxes, we cannot use .val() because it will always
 			// return the value attribute regardless if the checkbox is checked
 		  , inputValue = $this.is(':checkbox:not(:checked)') ? false : $this.val()
@@ -319,6 +319,11 @@
 
 		// no conditions? bail!
 		if (!conditions || typeof conditions !== 'object') return;
+
+		// for radios, we need to find the currently selected radio of the bunch
+		if ($this.attr('type')==='radio') {
+			inputValue = $(document.getElementsByName($this.attr('name'))).find(':checked').val();
+		}
 
 		// loop through conditions and apply classes
 		// { 'element value': { 'target selector': 'class to add', ... }, ... }
