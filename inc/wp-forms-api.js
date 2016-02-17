@@ -318,12 +318,12 @@
 		;
 
 		// no conditions? bail!
-		if (typeof conditions !== 'object') return;
+		if (!conditions || typeof conditions !== 'object') return;
 
 		// loop through conditions and apply classes
 		// { 'element value': { 'target selector': 'class to add', ... }, ... }
 		for (var value in conditions) {
-			if (typeof conditions[value] === 'object') {
+			if (conditions[value] && typeof conditions[value] === 'object') {
 				for (var selector in conditions[value]) {
 					$(selector).toggleClass(conditions[value][selector], value == inputValue);
 				}
