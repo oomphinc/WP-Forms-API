@@ -1,1 +1,520 @@
-Hello World
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>WP Forms API by oomphinc</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">WP Forms API</h1>
+      <h2 class="project-tagline">A Drupal-esque API for creating and munging forms in WordPress</h2>
+      <a href="https://github.com/oomphinc/WP-Forms-API" class="btn">View on GitHub</a>
+      <a href="https://github.com/oomphinc/WP-Forms-API/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/oomphinc/WP-Forms-API/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <h1>
+<a id="wp-forms-api" class="anchor" href="#wp-forms-api" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>WP Forms API</h1>
+
+<p align="center">
+  <img width="490" height="275" src="https://github.com/bendoh/WP-Forms-API/raw/master/finally.jpg">
+</p>
+
+<p><em>A Drupal-esque API for creating and processing forms in WordPress.</em></p>
+
+<p>Provides a <code>WP_Forms_API</code> class composed of static methods which can be used to render forms defined by arbitrary data structures. You can also process the results submitted in those forms into a coherent set of values, smoothing over data types, validation (TODO: not yet!!), conditional logic and allowing for functional integration into WordPress using filters.</p>
+
+<h2>
+<a id="why" class="anchor" href="#why" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Why?</h2>
+
+<p>Writing and managing admin forms in WordPress is a real pain in the butt, and a data-driven approach is much more flexible and Drupal-y. WordPress tends to implement forms and other complex markup structures with literal markup templates, but those can be very difficult to manage and update. I have not seen any other similar development projects that brings some of the best ideas from Drupal into WordPress where they can benefit developers and clients alike by providing rapid development tools.</p>
+
+<p>Having forms driven by data sets instead of templates and markup creates a very generic, predictable, and stylizable structure in the rendered form markup, and easy management and updates to the form structure.</p>
+
+<p>Also provides more WordPress-specific form controls, such as "Select Image" or "Select Post" fields, which can enable powerful admin forms with very little code.</p>
+
+<h2>
+<a id="overview" class="anchor" href="#overview" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Overview</h2>
+
+<p>There are two basic elements:</p>
+
+<p>'form', which is any associative array.</p>
+
+<p>'element', a form that has at least <code>#type</code> and <code>#key</code> keys.</p>
+
+<h2>
+<a id="build" class="anchor" href="#build" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Build</h2>
+
+<p>This project uses NPM to manage dependencies and gulp to build. Use <code>npm install</code> to install all the dependencies. Use <code>gulp</code> to build the CSS files.</p>
+
+<h2>
+<a id="api-quick-start" class="anchor" href="#api-quick-start" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>API Quick Start</h2>
+
+<div class="highlight highlight-text-html-php"><pre><span class="pl-s1"><span class="pl-c">/**</span></span>
+<span class="pl-s1"><span class="pl-c"> * Define a form called 'my-form' which contains an address1 and address2</span></span>
+<span class="pl-s1"><span class="pl-c"> * input, and another form called 'citystatezip' which contains three input</span></span>
+<span class="pl-s1"><span class="pl-c"> * elements: city, state, zipcode</span></span>
+<span class="pl-s1"><span class="pl-c"> */</span></span>
+<span class="pl-s1"><span class="pl-smi">$form</span> <span class="pl-k">=</span> <span class="pl-c1">array</span>(</span>
+<span class="pl-s1">  <span class="pl-s"><span class="pl-pds">'</span>#id<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">'</span>my-form<span class="pl-pds">'</span></span>,</span>
+<span class="pl-s1"></span>
+<span class="pl-s1">  <span class="pl-s"><span class="pl-pds">'</span>address1<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-c1">array</span>(</span>
+<span class="pl-s1">    <span class="pl-s"><span class="pl-pds">'</span>#label<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">"</span>Street<span class="pl-pds">"</span></span>,</span>
+<span class="pl-s1">    <span class="pl-s"><span class="pl-pds">'</span>#type<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">'</span>text<span class="pl-pds">'</span></span>,</span>
+<span class="pl-s1">    <span class="pl-s"><span class="pl-pds">'</span>#placeholder<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">"</span>Line 1<span class="pl-pds">"</span></span>,</span>
+<span class="pl-s1">  ),</span>
+<span class="pl-s1">  <span class="pl-s"><span class="pl-pds">'</span>address2<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-c1">array</span>(</span>
+<span class="pl-s1">    <span class="pl-s"><span class="pl-pds">'</span>#type<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">'</span>text<span class="pl-pds">'</span></span>,</span>
+<span class="pl-s1">    <span class="pl-s"><span class="pl-pds">'</span>#placeholder<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">"</span>Line 2<span class="pl-pds">"</span></span></span>
+<span class="pl-s1">  ),</span>
+<span class="pl-s1"></span>
+<span class="pl-s1">  <span class="pl-s"><span class="pl-pds">'</span>citystatezip<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-c1">array</span>(</span>
+<span class="pl-s1">    <span class="pl-s"><span class="pl-pds">'</span>city<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-c1">array</span>(</span>
+<span class="pl-s1">      <span class="pl-s"><span class="pl-pds">'</span>#type<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">'</span>text<span class="pl-pds">'</span></span>,</span>
+<span class="pl-s1">      <span class="pl-s"><span class="pl-pds">'</span>#label<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">"</span>City<span class="pl-pds">"</span></span>,</span>
+<span class="pl-s1">      <span class="pl-s"><span class="pl-pds">'</span>#placeholder<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">"</span>Boston<span class="pl-pds">"</span></span>,</span>
+<span class="pl-s1">      <span class="pl-s"><span class="pl-pds">'</span>#size<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-c1">20</span></span>
+<span class="pl-s1">    ),</span>
+<span class="pl-s1">    <span class="pl-s"><span class="pl-pds">'</span>state<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-c1">array</span>(</span>
+<span class="pl-s1">      <span class="pl-s"><span class="pl-pds">'</span>#type<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">'</span>text<span class="pl-pds">'</span></span>,</span>
+<span class="pl-s1">      <span class="pl-s"><span class="pl-pds">'</span>#label<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">"</span>State<span class="pl-pds">"</span></span>,</span>
+<span class="pl-s1">      <span class="pl-s"><span class="pl-pds">'</span>#placeholder<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">"</span>MA<span class="pl-pds">"</span></span>,</span>
+<span class="pl-s1">      <span class="pl-s"><span class="pl-pds">'</span>#size<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-c1">4</span>,</span>
+<span class="pl-s1">    ),</span>
+<span class="pl-s1">    <span class="pl-s"><span class="pl-pds">'</span>zipcode<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-c1">array</span>(</span>
+<span class="pl-s1">      <span class="pl-s"><span class="pl-pds">'</span>#type<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">'</span>text<span class="pl-pds">'</span></span>,</span>
+<span class="pl-s1">      <span class="pl-s"><span class="pl-pds">'</span>#label<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">"</span>ZIP<span class="pl-pds">"</span></span>,</span>
+<span class="pl-s1">      <span class="pl-s"><span class="pl-pds">'</span>#placeholder<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">"</span>01011<span class="pl-pds">"</span></span>,</span>
+<span class="pl-s1">      <span class="pl-s"><span class="pl-pds">'</span>#size<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-c1">7</span></span>
+<span class="pl-s1">    )</span>
+<span class="pl-s1">  ),</span>
+<span class="pl-s1">);</span>
+<span class="pl-s1"></span>
+<span class="pl-s1"><span class="pl-c">/**</span></span>
+<span class="pl-s1"><span class="pl-c"> * Define the values for this form</span></span>
+<span class="pl-s1"><span class="pl-c"> */</span></span>
+<span class="pl-s1"><span class="pl-smi">$values</span> <span class="pl-k">=</span> <span class="pl-c1">array</span>(</span>
+<span class="pl-s1">  <span class="pl-s"><span class="pl-pds">'</span>city<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">"</span>Omaha<span class="pl-pds">"</span></span>,</span>
+<span class="pl-s1">  <span class="pl-s"><span class="pl-pds">'</span>state<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">"</span>Nebraska<span class="pl-pds">"</span></span></span>
+<span class="pl-s1">);</span>
+<span class="pl-s1"></span>
+<span class="pl-s1"><span class="pl-c">/**</span></span>
+<span class="pl-s1"><span class="pl-c"> * You can render the form in whatever context you'd like: Front-end, meta boxes,</span></span>
+<span class="pl-s1"><span class="pl-c"> * wherever. Does not render containing &lt;form&gt; elements: the form is expected to be</span></span>
+<span class="pl-s1"><span class="pl-c"> * defined at this point.</span></span>
+<span class="pl-s1"><span class="pl-c"> */</span></span>
+<span class="pl-s1"><span class="pl-c1">echo</span> <span class="pl-c1">WP_Forms_API</span><span class="pl-k">::</span>render_form( <span class="pl-smi">$form</span>, <span class="pl-smi">$values</span> );</span>
+<span class="pl-s1"></span>
+<span class="pl-s1"><span class="pl-c">/**</span></span>
+<span class="pl-s1"><span class="pl-c"> * Now I want to save the elements from this form. Each element gets an input</span></span>
+<span class="pl-s1"><span class="pl-c"> * with the same name as its '#key' which defaults to its array key.</span></span>
+<span class="pl-s1"><span class="pl-c"> */</span></span>
+<span class="pl-s1">add_action( <span class="pl-s"><span class="pl-pds">'</span>save_post<span class="pl-pds">'</span></span>, <span class="pl-k">function</span>( <span class="pl-smi">$post</span> ) <span class="pl-k">use</span> ( <span class="pl-smi">$form</span> ) {</span>
+<span class="pl-s1">  <span class="pl-smi">$post</span> <span class="pl-k">=</span> get_post( <span class="pl-smi">$post</span> );</span>
+<span class="pl-s1"></span>
+<span class="pl-s1">  <span class="pl-c">// Fill in posted values for this form in $values. Every key</span></span>
+<span class="pl-s1">  <span class="pl-c">// in $values is guaranteed to be defined for every input in defined in $form.</span></span>
+<span class="pl-s1">  <span class="pl-c1">WP_Forms_API</span><span class="pl-k">::</span>process_form( <span class="pl-smi">$form</span>, <span class="pl-smi">$values</span> );</span>
+<span class="pl-s1"></span>
+<span class="pl-s1">  update_post_meta( <span class="pl-smi">$post</span><span class="pl-k">-&gt;</span><span class="pl-smi">ID</span>, <span class="pl-s"><span class="pl-pds">'</span>city<span class="pl-pds">'</span></span>, <span class="pl-smi">$values</span>[<span class="pl-s"><span class="pl-pds">'</span>city<span class="pl-pds">'</span></span>] );</span>
+<span class="pl-s1">} )</span></pre></div>
+
+<h2>
+<a id="reference" class="anchor" href="#reference" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Reference</h2>
+
+<p>Forms and elements are represented with simple associative arrays.</p>
+
+<p>A form is a top-level object, but an element is also a form.</p>
+
+<p>Special keys start with '#', all other keys are interpreted as elements in themselves.</p>
+
+<p>Any form that contains a <code>#type</code> key is considered to be an input element and will
+create a corresponding named form input.</p>
+
+<h3>
+<a id="functions" class="anchor" href="#functions" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Functions</h3>
+
+<p>This plugin implements a class <code>WP_Forms_API</code> which provides the following static methods:</p>
+
+<ul>
+<li><code>WP_Forms_API::render_form( $form, &amp;$values )</code></li>
+</ul>
+
+<p>Recursively render a form using values in <code>$values</code> and return its markup. This is the primary rendering function you'll need. Applies <code>wp_form</code> filter to the form before rendering.</p>
+
+<p><code>$form</code> - (array) - The form to render.</p>
+
+<p><code>$values</code> - (array ref) - The values for the elements in this form. While the form structure is nested and heirarchical, the values structure is flat (mostly: see 'composite' values).</p>
+
+<p><code>$top</code> - (optional array) - The top-level form.</p>
+
+<ul>
+<li>
+<code>WP_Forms_API::render_element( $element, &amp;$values )</code> - Render a single element.</li>
+</ul>
+
+<p>Renders an element, and any sub-forms, returning the rendered markup. You must specify a scalar <code>#key</code> in an element or else an exception will be thrown.</p>
+
+<p><code>$form</code> - (array) - The form to render.</p>
+
+<p><code>$values</code> - (array ref) - The values for the elements in this form. While the form structure is nested and heirarchical, the values structure is flat (mostly: see 'composite' values).</p>
+
+<p>Applies <code>wp_form_element</code> filter to element before rendering.</p>
+
+<ul>
+<li><code>WP_Forms_API::make_tag( $tagname, $attrs, $content = null )</code></li>
+</ul>
+
+<p>Make and return a single HTML tag.</p>
+
+<p><code>$tagname</code> - (string) - The name of the HTML tag to emit. If empty, do nothing.</p>
+
+<p><code>$attrs</code> - (array) - An associative array of HTML attributes for this tag.</p>
+
+<p><code>$content</code> - (string|false) - The content for this tag, if any. If null, then emit a self-closing tag. If <code>false</code>, then the tag will not be closed.</p>
+
+<ul>
+<li>
+<code>WP_Forms_API::get_elements( $form )</code> - Initialize and return all of the elements of a form.</li>
+</ul>
+
+<p><code>$form</code> - (array) The form to extract elements from.</p>
+
+<p>Use this function to get initialized sub-elements from a form, skipping all the special keys.</p>
+
+<ul>
+<li>
+<code>WP_Forms_API::process_form( $form, &amp;$values, $input = null )</code> - Process a submitted form and extract submitted values.</li>
+</ul>
+
+<p><code>$form</code> - (array) - The form to process.</p>
+
+<p><code>$values</code> - (array reference) - Save result values into this structure.</p>
+
+<p><code>$input</code> - (array, optional) - The input array. Defaults to <code>$_POST</code>.</p>
+
+<h3>
+<a id="filters" class="anchor" href="#filters" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Filters</h3>
+
+<p>Forms and form elements are run through the <code>wp_form</code> and <code>wp_form_element</code> WP filters, respectively, before they are rendered. This gives developers the ability to define special input tags, (by setting in the <code>#tag</code> property), as well as updating or hiding elements as they are rendered.</p>
+
+<p>The <code>wp_form</code> filter receives <code>$form, $top</code> as arguments, where <code>$form</code> is the current form node, and <code>$top</code> is the top-level form. You can identify specific forms using the <code>#id</code> key, but any arbitrary key starting with <code>#</code> can be also be used.</p>
+
+<p>The <code>wp_form_element</code> filter recieves <code>$element, $form</code> as</p>
+
+<h3>
+<a id="forms" class="anchor" href="#forms" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Forms</h3>
+
+<p>All keys in forms are optional.</p>
+
+<ul>
+<li>
+<code>#id</code> (string)</li>
+</ul>
+
+<p>The reference ID for this form, for filtering output. When defined, elements are run through the filter <code>wp_form_element_{$form_id}-{$element_key}</code> before they are rendered, so they can be modified, removed, or otherwise.</p>
+
+<ul>
+<li>
+<code>#label</code> (string)</li>
+</ul>
+
+<p>The label for this form or element.</p>
+
+<ul>
+<li>
+<code>#class</code> (array)</li>
+</ul>
+
+<p>CSS classes in <code>class</code> attributes.</p>
+
+<ul>
+<li>
+<code>#attrs</code> (array)</li>
+</ul>
+
+<p>The attributes to use for the rendered container tag. If <code>class</code> key is specified, is it prepended by the classes in <code>#class</code>.</p>
+
+<ul>
+<li>
+<code>#form</code> (array)</li>
+</ul>
+
+<p>The top-level form. This defaults to the form itself.</p>
+
+<ul>
+<li>
+<code>#container</code> (string)</li>
+</ul>
+
+<p>The tag name for the container of this form or element. Defaults to <code>div</code>.</p>
+
+<ul>
+<li>
+<code>#container_classes</code> (array)</li>
+</ul>
+
+<p>An array of CSS classes to add to the container element.</p>
+
+<h3>
+<a id="elements" class="anchor" href="#elements" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Elements</h3>
+
+<p>An element is an associative array with at least a <code>#type</code> key. An element
+can have any of the properties of a form, as well as the following:</p>
+
+<ul>
+<li>
+<code>#type</code> (string)</li>
+</ul>
+
+<p>When present, indicates that the element is an input element. Values:</p>
+
+<ul>
+<li>
+<code>'text'</code> – Plain text input.</li>
+<li>
+<code>'select'</code> - A select box. Requires <code>#options</code> key.</li>
+<li>
+<code>'checkbox'</code> - A boolean.</li>
+<li>
+<code>'textarea'</code> - A textarea.</li>
+<li>
+<code>'multiple'</code> - A collection of values.</li>
+<li>
+<code>'composite'</code> - A composite value which is posted as an array in #key.</li>
+<li>
+<code>'image'</code> - An image from the media library</li>
+<li><p><code>'post_select'</code> - A post</p></li>
+<li><p>Any other value will be rendered as a text input. You can use custom types along with the <code>wp_form_element</code> filter to define input tag types</p></li>
+<li><p><code>#key</code> (string)</p></li>
+</ul>
+
+<p>The key for this element. Is used to create default form element <code>name</code>
+attributes and slugs for classes.</p>
+
+<ul>
+<li> <code>#placeholder</code> (string)</li>
+</ul>
+
+<p>The placeholder to use in the form element. Applies to 'text' and 'textarea' types.</p>
+
+<ul>
+<li> <code>#options</code> (array)</li>
+</ul>
+
+<p>The options, as given by 'value' =&gt; "Label", for this input element. Only applies to select.</p>
+
+<ul>
+<li> <code>#required</code> (bool)</li>
+</ul>
+
+<p>Whether or not the key is required. (TODO: Currently only affects <code>'select'</code>-type elements.)</p>
+
+<ul>
+<li> <code>#name</code> (string, optional)</li>
+</ul>
+
+<p>The input element name - defaults to <code>#key</code>.</p>
+
+<ul>
+<li> <code>#slug</code> (string, optional)</li>
+</ul>
+
+<p>The CSS element name - defaults to <code>#key</code>.</p>
+
+<ul>
+<li> <code>#size</code> (int)</li>
+</ul>
+
+<p>The size of the element.</p>
+
+<ul>
+<li> <code>#multiple</code> (array)</li>
+</ul>
+
+<p>Required for <code>$form['#type'] == 'multiple'</code>. Define another form whose values are collected into an array for this element.</p>
+
+<ul>
+<li> <code>#add_link</code> (string)</li>
+</ul>
+
+<p>When using #multiple, the text to show for the "Add Item" button.</p>
+
+<ul>
+<li> <code>#remove_link</code> (string)</li>
+</ul>
+
+<p>When using #multiple, the text to show for the "Remove Item" button.</p>
+
+<ul>
+<li> <code>#post_type</code> (string)</li>
+</ul>
+
+<p>For <code>#type = 'post_select'</code>, the space-separated list of valid post types to search against.</p>
+
+<ul>
+<li>
+<code>#conditional</code> (array)</li>
+</ul>
+
+<p>Show or hide elements depending on the element's value. Please note that conditional logic only works on input types that trigger a Javascript change event (e.g. select menus, checkboxes, radios, etc)</p>
+
+<ul>
+<li>
+<code>element</code> – A jQuery-esk selector for the element that should react to changes to this element's value (e.g. <code>#element-id</code>, <code>.element-class</code>, etc).</li>
+<li>
+<code>action</code> - The action perform on the element. Either 'show' or 'hide'.</li>
+<li>
+<code>value</code> - If the value of the input is this value, then show|hide the target element.</li>
+</ul>
+
+<h3>
+<a id="filterable-element-properties" class="anchor" href="#filterable-element-properties" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Filterable element properties</h3>
+
+<p>These properties should only be modified in the <code>wp_form_element</code> filter.</p>
+
+<ul>
+<li> <code>#content</code> (string)</li>
+</ul>
+
+<p>Any content to put in the input tag. Additional content from rendering the tag will be appended to this value if it is provided. Only applies to <code>'select'</code> and <code>'checkbox'</code> types, but will render  tags with this content if it is provided.</p>
+
+<ul>
+<li> <code>#tag</code> (string)</li>
+</ul>
+
+<p>The actual tag name to use for the input.</p>
+
+<h3>
+<a id="rendered-input-names" class="anchor" href="#rendered-input-names" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Rendered Input Names</h3>
+
+<p>Form input elements rendered using this API are receive the name specified in <code>#name</code>, which defaults to as their <code>#key</code>.</p>
+
+<p>For <code>'#type' =&gt; 'composite'</code>, any elements in the form tree below the current element receive names that result in an associative array being submitted for that <code>#key</code>. For example, the form defined below:</p>
+
+<div class="highlight highlight-text-html-php"><pre><span class="pl-s1"><span class="pl-smi">$form</span> <span class="pl-k">=</span> <span class="pl-c1">array</span>(</span>
+<span class="pl-s1">  <span class="pl-s"><span class="pl-pds">'</span>address<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-c1">array</span>(</span>
+<span class="pl-s1">    <span class="pl-s"><span class="pl-pds">'</span>#type<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">'</span>composite<span class="pl-pds">'</span></span>,</span>
+<span class="pl-s1">    <span class="pl-s"><span class="pl-pds">'</span>city<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-c1">array</span>( <span class="pl-s"><span class="pl-pds">'</span>#type<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">'</span>text<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>#label<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">"</span>City<span class="pl-pds">"</span></span> ),</span>
+<span class="pl-s1">    <span class="pl-s"><span class="pl-pds">'</span>state<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-c1">array</span>( <span class="pl-s"><span class="pl-pds">'</span>#type<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">'</span>text<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>#label<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">"</span>State<span class="pl-pds">"</span></span> ),</span>
+<span class="pl-s1">    <span class="pl-s"><span class="pl-pds">'</span>zip<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-c1">array</span>( <span class="pl-s"><span class="pl-pds">'</span>#type<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">'</span>text<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>#label<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">"</span>ZIP<span class="pl-pds">"</span></span> ),</span>
+<span class="pl-s1">  )</span>
+<span class="pl-s1">);</span></pre></div>
+
+<p>Will result in three input elements named <code>address[city]</code>, <code>address[state]</code>, and <code>address[zip]</code>.</p>
+
+<p>For <code>'#type' =&gt; 'multiple'</code>, you must specify a <code>#multiple</code> key, which is a form whose values are collected into an indexed array. For example, the following form:</p>
+
+<div class="highlight highlight-text-html-php"><pre><span class="pl-s1"><span class="pl-smi">$form</span> <span class="pl-k">=</span> <span class="pl-c1">array</span>(</span>
+<span class="pl-s1">  <span class="pl-s"><span class="pl-pds">'</span>favorites<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-c1">array</span>(</span>
+<span class="pl-s1">    <span class="pl-s"><span class="pl-pds">'</span>#type<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">'</span>multiple<span class="pl-pds">'</span></span>,</span>
+<span class="pl-s1">    <span class="pl-s"><span class="pl-pds">'</span>#multiple<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-c1">array</span>(</span>
+<span class="pl-s1">      <span class="pl-s"><span class="pl-pds">'</span>name<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-c1">array</span>( <span class="pl-s"><span class="pl-pds">'</span>#type<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">'</span>text<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>#label<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">"</span>Favorite:<span class="pl-pds">"</span></span> )</span>
+<span class="pl-s1">    )</span>
+<span class="pl-s1">  )</span>
+<span class="pl-s1">);</span></pre></div>
+
+<p>Will result in a multi-valued form with inputs named <code>favorites[0][name]</code>, <code>favorites[1][name]</code>, and so on, for each value submitted. The form will always render at least one empty input. When multiple-valued form elements are used, the script handle <code>wp-forms</code> is enqueued, which manages control of adding / removing multiple elements.</p>
+
+<p>In general, the naming should be unimportant to you when using <code>process_form()</code>, but it is important to know how <code>$values</code> will be structured <code>$values</code> after calling <code>process_form()</code>.</p>
+
+<h3>
+<a id="processing" class="anchor" href="#processing" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Processing</h3>
+
+<p>Use the method <code>WP_Forms_API::process_form( $form, $values )</code> to populate $values with named elements defined by $form. By default will use values from <code>$_POST</code>, but you can pass an optional third argument to pull element values from.</p>
+
+<p>The filter <code>wp_form_process</code> is called with arguments <code>$form, &amp;$values, &amp;$input</code> and allows modification of forms or sub-forms before they are rendered. You can access the top-level form in <code>$form['#form']</code></p>
+
+<p>The filter <code>wp_form_process_element</code> is called with <code>$element, &amp;$values, &amp;$input</code>, and allows modification of individual elements before they are processed. You can access the sub-form that this element is a part of in <code>$element['#form']</code>, and the top-level form in <code>$element['#form']['#form']</code>.</p>
+
+<p>In each of these filters, <code>&amp;$values</code> and <code>&amp;$input</code> may refer to sub-arrays of the original <code>$values</code> and <code>$input</code> arrays. To access the top-level of these structures, access <code>$form['#form']['#values']</code> and <code>$form['#form']['#input']</code> for forms, and <code>$element['#form']['#form']['#values']</code> and <code>$element['#form']['#form']['#input']</code> for elements.</p>
+
+<h2>
+<a id="css" class="anchor" href="#css" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>CSS</h2>
+
+<p>Element slugs are built from the chain of parent elements, separated by <code>'-'</code>. These slugs are used to form CSS class names for elements for targeted styling.</p>
+
+<p>Forms get the following classes: <code>.wp-form</code>, and if #id is defined, <code>.wp-form-{$form['#id']}</code>. They also receive the attribute <code>id="{$element['#id']}"</code></p>
+
+<p>Each element is rendered in a container element of tag <code>#container</code> with classes defined in <code>#container_classes</code>. The following classes are also added to the container element: <code>.wp-form-element .wp-form-element-{$slug}</code>.</p>
+
+<p>Each input element is rendered using the tag <code>$element['#tag']</code> and attributes in <code>$element['#attrs']</code>. These values can be modified per-element using the <code>wp_form_element</code> filter. The default classes are <code>.wp-form-input</code> and <code>.wp-form-input-{$element['#slug']}</code>.</p>
+
+<p>Labels receive the classes <code>.wp-form-label</code> and <code>.wp-form-label-{$element['#slug']}</code>.</p>
+
+<h2>
+<a id="examples" class="anchor" href="#examples" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Examples</h2>
+
+<p>An example form might look like the following, which captures a name and a zip code:</p>
+
+<div class="highlight highlight-text-html-php"><pre><span class="pl-s1"><span class="pl-k">&lt;</span><span class="pl-c1">form</span> <span class="pl-c1">method</span><span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">"</span>post<span class="pl-pds">"</span></span> <span class="pl-c1">action</span><span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">"</span>/my/form/handler<span class="pl-pds">"</span></span><span class="pl-k">&gt;</span></span>
+<span class="pl-s1"><span class="pl-k">&lt;</span>?<span class="pl-c1">php</span></span>
+<span class="pl-s1">    <span class="pl-smi">$form</span> <span class="pl-k">=</span> <span class="pl-c1">array</span>(</span>
+<span class="pl-s1">        <span class="pl-s"><span class="pl-pds">'</span>name<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-c1">array</span>(</span>
+<span class="pl-s1">            <span class="pl-s"><span class="pl-pds">'</span>#type<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">'</span>text<span class="pl-pds">'</span></span>,</span>
+<span class="pl-s1">            <span class="pl-s"><span class="pl-pds">'</span>#label<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">"</span>Enter your name:<span class="pl-pds">"</span></span>,</span>
+<span class="pl-s1">            <span class="pl-s"><span class="pl-pds">'</span>#placeholder<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">"</span>Charlie Brown<span class="pl-pds">"</span></span></span>
+<span class="pl-s1">        ),</span>
+<span class="pl-s1">        <span class="pl-s"><span class="pl-pds">'</span>zipcode<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-c1">array</span>(</span>
+<span class="pl-s1">            <span class="pl-s"><span class="pl-pds">'</span>#type<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">'</span>text<span class="pl-pds">'</span></span>,</span>
+<span class="pl-s1">            <span class="pl-s"><span class="pl-pds">'</span>#label<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">"</span>Enter your ZIP code:<span class="pl-pds">"</span></span>,</span>
+<span class="pl-s1">            <span class="pl-s"><span class="pl-pds">'</span>#placeholder<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">"</span>90210<span class="pl-pds">"</span></span>,</span>
+<span class="pl-s1">            <span class="pl-s"><span class="pl-pds">'</span>#size<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-c1">5</span></span>
+<span class="pl-s1">        ),</span>
+<span class="pl-s1">        <span class="pl-s"><span class="pl-pds">'</span>save<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-c1">array</span>(</span>
+<span class="pl-s1">            <span class="pl-s"><span class="pl-pds">'</span>#type<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">'</span>submit<span class="pl-pds">'</span></span>,</span>
+<span class="pl-s1">            <span class="pl-s"><span class="pl-pds">'</span>#value<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">"</span>Save Information<span class="pl-pds">"</span></span></span>
+<span class="pl-s1">        )</span>
+<span class="pl-s1">    );</span>
+<span class="pl-s1"></span>
+<span class="pl-s1">    <span class="pl-c1">echo</span> <span class="pl-c1">WP_Forms_API</span><span class="pl-k">::</span>render_form( <span class="pl-smi">$form</span>, <span class="pl-smi">$input</span> );</span>
+<span class="pl-s1"></span><span class="pl-pse"><span class="pl-s1">?</span>&gt;</span>
+&lt;/<span class="pl-ent">form</span>&gt;</pre></div>
+
+<p>This form will present two input fields: <code>'name'</code>, and <code>'zipcode'</code>, as well as a submit button that is labelled "Save Information".</p>
+
+<p>You can process the form using <code>WP_Forms_API::process_form()</code>:</p>
+
+<div class="highlight highlight-text-html-php"><pre><span class="pl-s1"><span class="pl-k">&lt;</span><span class="pl-k">!</span><span class="pl-k">--</span> <span class="pl-c1">Then</span> <span class="pl-c1">process</span> <span class="pl-c1">the</span> <span class="pl-c1">form</span> <span class="pl-k">--</span><span class="pl-k">&gt;</span></span>
+<span class="pl-s1"><span class="pl-k">&lt;</span>?<span class="pl-c1">php</span></span>
+<span class="pl-s1">    <span class="pl-c1">WP_Forms_API</span><span class="pl-k">::</span>process_form( <span class="pl-smi">$form</span>, <span class="pl-smi">$values</span> );</span>
+<span class="pl-s1"></span><span class="pl-pse"><span class="pl-s1">?</span>&gt;</span>
+
+&lt;<span class="pl-ent">p</span>&gt;
+    Your name is: <span class="pl-pse">&lt;?php</span><span class="pl-s1"> <span class="pl-c1">echo</span> esc_html( <span class="pl-smi">$form</span>[<span class="pl-s"><span class="pl-pds">'</span>name<span class="pl-pds">'</span></span>] ); </span><span class="pl-pse"><span class="pl-s1">?</span>&gt;</span>
+&lt;/<span class="pl-ent">p</span>&gt;
+
+&lt;<span class="pl-ent">p</span>&gt;
+    Your ZIP is: <span class="pl-pse">&lt;?php</span><span class="pl-s1"> <span class="pl-c1">echo</span> esc_html( <span class="pl-smi">$form</span>[<span class="pl-s"><span class="pl-pds">'</span>zipcode<span class="pl-pds">'</span></span>] ); </span><span class="pl-pse"><span class="pl-s1">?</span>&gt;</span>
+&lt;/<span class="pl-ent">p</span>&gt;</pre></div>
+
+<h2>
+<a id="please-help" class="anchor" href="#please-help" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Please help!</h2>
+
+<p>This project is merely a generalization of work I did for another project. I've spent many frustrating hours building forms in WordPress, and I knew there had to be an easier way. This doesn't claim to be nearly as powerful as the Drupal Forms API, but maybe one day, with your help, it could be!</p>
+
+<h2>
+<a id="plugin-brought-to-you-by-oomph-inc" class="anchor" href="#plugin-brought-to-you-by-oomph-inc" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Plugin brought to you by Oomph, Inc</h2>
+
+<p><img src="https://github.com/gdtrombetti/WP-Forms-API/blob/master/images/Oomph_logo.png" alt=""></p>
+
+<p>Oomph is a full service digital design and engineering firm assisting premium brands and media companies with large-scale content engagement solutions.
+<a href="http://oomphinc.com/">http://oomphinc.com/</a></p>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/oomphinc/WP-Forms-API">WP Forms API</a> is maintained by <a href="https://github.com/oomphinc">oomphinc</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
+  </body>
+</html>
