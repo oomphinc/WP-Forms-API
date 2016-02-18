@@ -409,7 +409,7 @@ This project is merely a generalization of work I did for another project. I've 
 
 ## Plugin brought to you by Oomph, Inc
 
-![](https://github.com/gdtrombetti/WP-Forms-API/blob/master/images/Oomph_logo.png)
+![](http://9nu7s33f124vz422sv0if27h.wpengine.netdna-cdn.com/wp-content/themes/oomphinc/images/oomph-logos/oomph_wordmark_red.svg)
 
 Oomph is a full service digital design and engineering firm assisting premium brands and media companies with large-scale content engagement solutions.
 http://oomphinc.com/
