@@ -197,6 +197,7 @@ class WP_Forms_API {
 	 * @action admin_enqueue_scripts
 	 */
 	static function admin_enqueue() {
+		wp_enqueue_media();
 		wp_enqueue_style( 'wp-forms', plugins_url( 'wp-forms-api.css', __FILE__ ) );
 	}
 
