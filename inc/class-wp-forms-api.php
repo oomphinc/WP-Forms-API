@@ -77,6 +77,15 @@ class WP_Forms_API {
 		// Validation schema for this element. Can be an function or regular expression.
 		'#validator' => null,
 
+		// Validity state of this element.
+		'#valid' => true,
+
+		// The message to show after invalid values
+		'#invalid_message' => 'Invalid value',
+
+		// How many invalid elements were found in this form.
+		'#invalid_count' => 0,
+
 		// When #type=multiple, the index of this particular element in the set
 		'#index' => null,
 
@@ -690,6 +699,18 @@ class WP_Forms_API {
 			}
 		}
 
+		if( !$element['#valid'] ) ) {
+			$element['class'][] = 'wp-form-element-invalid';
+		}
+
+		if( $element['#validator'] ) {
+			// TODO: how to express this to markup so that it can be used in
+			// validation post-backs? Perhaps it's better to take the drupal approach
+			// and post the whole form, check output, and re-render it with validation
+			// messages.
+		}
+
+
 		$element = apply_filters( 'wp_form_element', $element );
 		$element = apply_filters( 'wp_form_element_key_' . $element['#key'], $element );
 
@@ -714,6 +735,11 @@ class WP_Forms_API {
 			$markup .= $element['#label_position'] == 'before' ? $label : '';
 			$markup .= self::make_tag( $element['#tag'], $element['#attrs'], $element['#content'] );
 			$markup .= $element['#label_position'] == 'after' ? $label : '';
+		}
+
+		// Add validation message if element value is not valid
+		if( !$element['#valid'] ) && $element['#invalid_message'] ) {
+			$markup .= self::make_tag( 'span', array( 'class' => 'wp-form-element-invalid-message' ), $element['#invalid_message'] );
 		}
 
 		if( $element['#description'] ) {
@@ -937,6 +963,7 @@ class WP_Forms_API {
 
 					// STOP! In the name of ... invalidity!
 					if( !$element['#valid'] ) {
+						$element['#form']['#invalid_count'] ++;
 						break;
 					}
 				}
