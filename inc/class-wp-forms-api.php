@@ -74,6 +74,9 @@ class WP_Forms_API {
 		// Whether or not a value is required
 		'#required' => false,
 
+		// Validation schema for this element. Can be an function or regular expression.
+		'#validator' => null,
+
 		// When #type=multiple, the index of this particular element in the set
 		'#index' => null,
 
@@ -870,6 +873,9 @@ class WP_Forms_API {
 		$values_root = &$values;
 		$input_root = &$input;
 
+		// Assume every element is valid until proven otherwise
+		$element['#valid'] = true;
+
 		// Process button value by simple presence of #key
 		if( self::is_button( $element ) ) {
 			$element['#value'] = isset( $input[$element['#key']] ) && $input[$element['#key']];
@@ -910,11 +916,31 @@ class WP_Forms_API {
 			else if( isset( $element['#type'] ) && $element['#type'] != 'composite' ) {
 				$element['#value'] = sanitize_text_field( $element['#value'] );
 			}
+
+			// Validate element value and place result in #valid
+			if( !empty( $element['#validator'] ) ) {
+				$validators = (array) $element['#validator'];
+
+				foreach( $validators as $validator ) {
+					if( is_callable( $element['#validator'] ) ) {
+						$element['#valid'] = call_user_func( $element['#validator'], $element );
+					}
+					else {
+						// Assume it's a regular expression
+						$element['#valid'] = preg_match( $elenent['#validator'], $element );
+					}
+
+					// STOP! In the name of ... invalidity!
+					if( !$element['#valid'] ) {
+						break;
+					}
+				}
+			}
 		}
 
 		// If there's a value, use it. May have been fed in as part of the form
 		// structure
-		if( isset( $element['#value'] ) ) {
+		if( isset( $element['#value'] ) && $element['#valid'] ) {
 			$values[$element['#key']] = $element['#value'];
 		}
 
