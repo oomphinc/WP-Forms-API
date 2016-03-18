@@ -74,8 +74,15 @@ class WP_Forms_API {
 		// Whether or not a value is required
 		'#required' => false,
 
-		// Validation schema for this element. Can be an function or regular expression.
-		'#validator' => null,
+		// Validation schema for this element. A single, or array of:
+		//
+		// 1) Callables
+		// 2) Preg-compatible regular expression
+		// 3) An array with
+		//        '#validator' => $callable_or_regex,
+		//        '#invalid_message' => The message to use when this
+		//                              validator fails.
+		'#validators' => [],
 
 		// Validity state of this element.
 		'#valid' => true,
@@ -944,7 +951,7 @@ class WP_Forms_API {
 			}
 
 			// Validate element value and place result in #valid
-			if( !empty( $element['#validator'] ) ) {
+			if( !empty( $element['#validators'] ) ) {
 				if( is_callable( $element['#validator'] ) ) {
 					$validators = [ $element['#validator'] ];
 				}
@@ -953,19 +960,7 @@ class WP_Forms_API {
 				}
 
 				foreach( $validators as $validator ) {
-					if( is_callable( $validator ) ) {
-						$element['#valid'] = call_user_func( $validator, $element );
-					}
-					else {
-						// Assume it's a regular expression
-						$element['#valid'] = preg_match( $validator, $element );
-					}
-
-					// STOP! In the name of ... invalidity!
-					if( !$element['#valid'] ) {
-						$element['#form']['#invalid_count'] ++;
-						break;
-					}
+					$this->validate( $element, $validator );
 				}
 			}
 		}
@@ -980,6 +975,39 @@ class WP_Forms_API {
 
 		self::process_form( $element, $values_root, $input_root );
 	}
+
+	/**
+	 * Validate an element using a validator, which is a callback
+	 */
+	function validate( &$element, $validator ) {
+		if( is_callable( $validator ) ) {
+			$element['#valid'] = call_user_func( $validator, $element );
+		}
+		else if( is_array( $validator ) && isset( $validator['#validator'] ) ) {
+			// If it's more complex, recurse!
+			$this->validate( $element, $validator['#validator'] );
+
+			// And if not valid, set the message and bail
+			if( !$element['#valid'] ) {
+				$element['#invalid_message'] = $validator['#invalid_message'];
+				return;
+			}
+		}
+		else if( is_string( $validator ) ) {
+			// Assume it's a regular expression
+			$element['#valid'] = preg_match( $validator, $element );
+		}
+		else {
+			// Throw an exception? Log an error? Fail silently?
+		}
+
+		// STOP! In the name of ... invalidity!
+		if( !$element['#valid'] ) {
+			$element['#form']['#invalid_count']++;
+			return;
+		}
+	}
+
 
 	/**
 	 * Templates used in this module
