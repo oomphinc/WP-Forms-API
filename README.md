@@ -403,6 +403,18 @@ You can process the form using `WP_Forms_API::process_form()`:
 </p>
 ```
 
+## Testing
+
+This package contains PHP Unit tests. To start testing, install the composer dependencies and the test database:
+
+```sh
+$ composer install
+
+$ bin/install-wp-tests.sh <db-name> <db-user> <db-pass>
+```
+
+Then you can execute the tests simply by executing `bin/run-tests`.
+
 ## Please help!
 
 This project is merely a generalization of work I did for another project. I've spent many frustrating hours building forms in WordPress, and I knew there had to be an easier way. This doesn't claim to be nearly as powerful as the Drupal Forms API, but maybe one day, with your help, it could be!

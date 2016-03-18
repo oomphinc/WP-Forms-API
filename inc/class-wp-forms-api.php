@@ -326,6 +326,7 @@ class WP_Forms_API {
 	 * through using the render_form() method.
 	 *
 	 * @param array $values. The values of the form, where each key is the '#key' of the element.
+	 * @return string of HTML representing the form
 	 *
 	 * Special rules may apply, see below.
 	 */
