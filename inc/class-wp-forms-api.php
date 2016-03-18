@@ -919,15 +919,20 @@ class WP_Forms_API {
 
 			// Validate element value and place result in #valid
 			if( !empty( $element['#validator'] ) ) {
-				$validators = (array) $element['#validator'];
+				if( is_callable( $element['#validator'] ) ) {
+					$validators = [ $element['#validator'] ];
+				}
+				else {
+					$validators = (array) $element['#validator'];
+				}
 
 				foreach( $validators as $validator ) {
-					if( is_callable( $element['#validator'] ) ) {
-						$element['#valid'] = call_user_func( $element['#validator'], $element );
+					if( is_callable( $validator ) ) {
+						$element['#valid'] = call_user_func( $validator, $element );
 					}
 					else {
 						// Assume it's a regular expression
-						$element['#valid'] = preg_match( $elenent['#validator'], $element );
+						$element['#valid'] = preg_match( $validator, $element );
 					}
 
 					// STOP! In the name of ... invalidity!
