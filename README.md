@@ -1,4 +1,4 @@
-# WP Forms API
+# WP Forms API [![Build Status](https://travis-ci.org/oomphinc/WP-Forms-API.svg?branch=master)](https://travis-ci.org/oomphinc/WP-Forms-API)
 
 [![Build Status](https://travis-ci.org/oomphinc/WP-Forms-API.svg?branch=master)](https://travis-ci.org/oomphinc/WP-Forms-API)
 
