@@ -519,7 +519,7 @@ class WP_Forms_API {
 			case 'checkbox':
 				// value attribute is arbitrary, we will only be looking for presence of the key
 				// the #checked value will be used for the actual field value to save
-				$attrs += [ 'value' => '1' ];
+				$attrs += array( 'value' => '1' );
 				$element['#content'] = null;
 				$element['#label_position'] = 'after';
 
