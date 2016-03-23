@@ -1,5 +1,7 @@
 # WP Forms API
 
+[![Build Status](https://travis-ci.org/oomphinc/WP-Forms-API.svg?branch=master)](https://travis-ci.org/oomphinc/WP-Forms-API)
+
 <p align="center">
   <img width="490" height="275" src="https://github.com/bendoh/WP-Forms-API/raw/master/finally.jpg">
 </p>
