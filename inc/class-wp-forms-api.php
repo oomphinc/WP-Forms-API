@@ -307,6 +307,7 @@ class WP_Forms_API {
 	 * through using the render_form() method.
 	 *
 	 * @param array $values. The values of the form, where each key is the '#key' of the element.
+	 * @return string of HTML representing the form
 	 *
 	 * Special rules may apply, see below.
 	 */
@@ -496,13 +497,13 @@ class WP_Forms_API {
 
 			// Backwards-compatible logic for conditional elements
 			if( isset( $element['#conditional']['element'], $element['#conditional']['action'], $element['#conditional']['value'] ) ) {
-				$element['#conditional'] = [
+				$element['#conditional'] = array(
 					// [ element value => [] ]
-					$element['#conditional']['value'] => [
+					$element['#conditional']['value'] => array(
 						// [ target selector => class to apply ]
 						$element['#conditional']['element'] => 'wp-form-conditional-' . $element['#conditional']['action'],
-					],
-				];
+					),
+				);
 			}
 			// Conditional actions
 			if ( !empty( $element['#conditional'] ) ) {
@@ -518,7 +519,7 @@ class WP_Forms_API {
 			case 'checkbox':
 				// value attribute is arbitrary, we will only be looking for presence of the key
 				// the #checked value will be used for the actual field value to save
-				$attrs += [ 'value' => '1' ];
+				$attrs += array( 'value' => '1' );
 				$element['#content'] = null;
 				$element['#label_position'] = 'after';
 

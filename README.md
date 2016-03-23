@@ -1,4 +1,4 @@
-# WP Forms API
+# WP Forms API [![Build Status](https://travis-ci.org/oomphinc/WP-Forms-API.svg?branch=master)](https://travis-ci.org/oomphinc/WP-Forms-API)
 
 <p align="center">
   <img width="490" height="275" src="https://github.com/bendoh/WP-Forms-API/raw/master/finally.jpg">
@@ -402,6 +402,18 @@ You can process the form using `WP_Forms_API::process_form()`:
 	Your ZIP is: <?php echo esc_html( $form['zipcode'] ); ?>
 </p>
 ```
+
+## Testing
+
+This package contains PHP Unit tests. To start testing, install the composer dependencies and the test database:
+
+```sh
+$ composer install
+
+$ bin/install-wp-tests.sh <db-name> <db-user> <db-pass>
+```
+
+Then you can execute the tests simply by executing `bin/run-tests`.
 
 ## Please help!
 
