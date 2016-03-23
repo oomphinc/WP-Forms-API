@@ -497,13 +497,13 @@ class WP_Forms_API {
 
 			// Backwards-compatible logic for conditional elements
 			if( isset( $element['#conditional']['element'], $element['#conditional']['action'], $element['#conditional']['value'] ) ) {
-				$element['#conditional'] = [
+				$element['#conditional'] = array(
 					// [ element value => [] ]
-					$element['#conditional']['value'] => [
+					$element['#conditional']['value'] => array(
 						// [ target selector => class to apply ]
 						$element['#conditional']['element'] => 'wp-form-conditional-' . $element['#conditional']['action'],
-					],
-				];
+					),
+				);
 			}
 			// Conditional actions
 			if ( !empty( $element['#conditional'] ) ) {
