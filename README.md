@@ -6,7 +6,7 @@
 
 *A Drupal-esque API for creating and processing forms in WordPress.*
 
-Provides a `WP_Forms_API` class composed of static methods which can be used to render forms defined by arbitrary data structures. You can also process the results submitted in those forms into a coherent set of values, smoothing over data types, validation (TODO: not yet!!), conditional logic and allowing for functional integration into WordPress using filters.
+Provides a `WP_Forms_API` class composed of static methods which can be used to render forms defined by arbitrary data structures. You can also process the results submitted in those forms into a coherent set of values, smoothing over data types, validation (in progress: https://github.com/oomphinc/WP-Forms-API/pull/35), conditional logic and allowing for functional integration into WordPress using filters.
 
 ## Why?
 
