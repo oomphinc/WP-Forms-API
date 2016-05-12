@@ -161,7 +161,7 @@
 				view.model.fetch();
 
 				// Don't save input name as part of the model as it should be invariant
-				view.input_name = this.name;
+				view.input_name = $(this).find('input').attr('name');
 				view.input_type = $(this).data('attachment-type');
 
 				view.render();
