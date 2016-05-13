@@ -124,9 +124,6 @@
 			prepare: function() {
 				var data = this.model.toJSON();
 
-				data.input_name = this.model.get('input_name');
-				data.input_type = this.model.get('input_type');
-
 				return data;
 			},
 
