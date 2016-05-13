@@ -122,12 +122,7 @@
 			},
 
 			prepare: function() {
-				var data = this.model.toJSON();
-
-				data.input_name = this.input_name;
-				data.input_type = this.input_type;
-
-				return data;
+				return this.model.toJSON();
 			},
 
 			update: function() {
@@ -160,9 +155,8 @@
 
 				view.model.fetch();
 
-				// Don't save input name as part of the model as it should be invariant
-				view.input_name = $(this).find('input').attr('name');
-				view.input_type = $(this).data('attachment-type');
+				view.model.set('input_name', this.name || $(this).find('input').attr('name'));
+				view.model.set('input_type', $(this).data('attachment-type'));
 
 				view.render();
 
