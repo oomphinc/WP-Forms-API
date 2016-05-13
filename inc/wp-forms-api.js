@@ -158,14 +158,8 @@
 				view.model.fetch();
 
 				// Don't save input name as part of the model as it should be invariant
-				if(typeof this.name === 'undefined'){
-					// New widgets added to sidebar after page load
-					view.model.set({'input_name': $(this).find('input').attr('name')});
-				} else {
-					// Widgets that exist at time of page load
-					view.model.set({'input_name': this.name});
-				}
-				view.model.set({'input_type': $(this).data('attachment-type')});
+				view.model.set('input_name', this.name || $(this).find('input').attr('name'));
+				view.model.set('input_type', $(this).data('attachment-type'));
 
 				view.render();
 
