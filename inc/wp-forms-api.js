@@ -124,8 +124,8 @@
 			prepare: function() {
 				var data = this.model.toJSON();
 
-				data.input_name = this.input_name;
-				data.input_type = this.input_type;
+				data.input_name = this.model.get('input_name');
+				data.input_type = this.model.get('input_type');
 
 				return data;
 			},
@@ -161,8 +161,14 @@
 				view.model.fetch();
 
 				// Don't save input name as part of the model as it should be invariant
-				view.input_name = $(this).find('input').attr('name');
-				view.input_type = $(this).data('attachment-type');
+				if(typeof this.name === 'undefined'){
+					// New widgets added to sidebar after page load
+					view.model.set({'input_name': $(this).find('input').attr('name')});
+				} else {
+					// Widgets that exist at time of page load
+					view.model.set({'input_name': this.name});
+				}
+				view.model.set({'input_type': $(this).data('attachment-type')});
 
 				view.render();
 
