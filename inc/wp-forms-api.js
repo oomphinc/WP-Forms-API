@@ -122,9 +122,7 @@
 			},
 
 			prepare: function() {
-				var data = this.model.toJSON();
-
-				return data;
+				return this.model.toJSON();
 			},
 
 			update: function() {
