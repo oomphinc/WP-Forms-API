@@ -13,6 +13,41 @@
 		},
 	});
 
+	function loadMCETemplates(content, editor) {
+		wp.ajax.post('wp_form_get_mce_templates', {
+			content: content,
+			type: getUserSetting('editor')
+		}).done(function(result) {
+			_.each(result, function(html, id) {
+				var $box = $('#' + id);
+
+				$box.html(html);
+
+				if(editor) {
+					$box.find('.wp-editor-wrap').addClass(editor == 'html' ? 'html-active' : 'tmce-active');
+				}
+
+				var config = _.clone(tinyMCEPreInit.mceInit.content);
+
+				config.selector = id;
+				config.toolbar1 = ['bold', 'italic', 'underline', 'blockquote', 'strikethrough', 'bullist', 'numlist', 'alignleft', 'aligncenter', 'alignright', 'undo', 'redo', 'link', 'unlink'].join(',');
+				config.toolbar2 = config.toolbar3 = config.toolbar4 = '';
+				config.plugins = ['colorpicker', 'lists', 'fullscreen', 'image', 'wordpress', 'wpeditimage', 'wplink' ].join(',');
+				config.cache_suffix += '-' + id;
+
+				quicktags(id);
+
+				tinyMCEPreInit.mceInit[id] = config;
+
+				if(editor != 'html') {
+					tinymce.init(config);
+				}
+			});
+
+			QTags._buttonsInit();
+		});
+	}
+
 	// Multiple-list field
 	var initializeMultiple = function(context) {
 		$(context).find('.wp-form-multiple').each(function() {
@@ -20,6 +55,7 @@
 			  , $list = $container.find('.wp-form-multiple-list')
 			  , $tmpl = $container.find('.wp-form-multiple-template')
 			;
+
 			// do not re-initialize
 			if ($container.data('initialized')) {
 				return;
@@ -75,7 +111,7 @@
 				});
 
 			// prevent double init which would register multiple click handlers
-			$container.data('initialized',true);
+			$container.data('initialized', true);
 		});
 	}
 

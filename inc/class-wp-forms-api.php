@@ -120,6 +120,8 @@ class WP_Forms_API {
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'admin_enqueue' ) );
 		add_action( 'wp_ajax_wp_form_search_posts', array( __CLASS__, 'search_posts' ) );
 		add_action( 'wp_ajax_wp_form_search_terms', array( __CLASS__, 'search_terms' ) );
+		add_action( 'wp_ajax_wp_form_get_mce_templates', array( __CLASS__, 'ajax_get_mce_templates' ) );
+
 		add_action( 'print_media_templates', array( __CLASS__, 'media_templates' ) );
 	}
 
@@ -922,6 +924,29 @@ class WP_Forms_API {
 		$element = apply_filters_ref_array( 'wp_form_process_element', array( &$element, &$values, &$input ) );
 
 		self::process_form( $element, $values_root, $input_root );
+	}
+
+	/**
+	 * Get WP editor templates for dynamically-inserted editors in #multiple fields
+	 *
+	 * @action wp_ajax_wp_form_get_mce_templates
+	 */
+	function ajax_get_mce_templates() {
+		$results = array();
+		$bodies = filter_input( INPUT_POST, 'content', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY );
+
+		foreach ( $bodies as $id => $body ) {
+			ob_start();
+			$lines = preg_split( '/$/m', $body );
+
+			wp_editor( $body, $id, array(
+				'textarea_name' => $id,
+				'textarea_rows' => count( $lines ),
+			)  );
+			$results[$id] = ob_get_clean();
+		}
+
+		wp_send_json_success( $results );
 	}
 
 	/**
