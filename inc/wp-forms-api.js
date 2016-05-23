@@ -13,13 +13,12 @@
 		},
 	});
 
-	function loadMCETemplates(content, editor) {
+	var loadMCETemplates = function(content, editor) {
 		wp.ajax.post('wp_form_get_mce_templates', {
-			content: content,
-			type: getUserSetting('editor')
+			content: content
 		}).done(function(result) {
 			_.each(result, function(html, id) {
-				var $box = $('#' + id);
+				var $box = $('#' + id).parent();
 
 				$box.html(html);
 
@@ -27,7 +26,7 @@
 					$box.find('.wp-editor-wrap').addClass(editor == 'html' ? 'html-active' : 'tmce-active');
 				}
 
-				var config = _.clone(tinyMCEPreInit.mceInit.content);
+				var config = _.clone(tinyMCEPreInit.mceInit.wpfapiTemplate);
 
 				config.selector = id;
 				config.toolbar1 = ['bold', 'italic', 'underline', 'blockquote', 'strikethrough', 'bullist', 'numlist', 'alignleft', 'aligncenter', 'alignright', 'undo', 'redo', 'link', 'unlink'].join(',');
@@ -46,6 +45,18 @@
 
 			QTags._buttonsInit();
 		});
+	}
+
+	// Any dynamically-inserted MCE containers
+	var initializeMCE = function(context) {
+		var request = {};
+
+		// Build up a query to get templates from AJAX
+		$(context).find('.wp-form-type-mce textarea').each(function() {
+			request[this.id] = this.value;
+		});
+
+		loadMCETemplates(request, 'html');
 	}
 
 	// Multiple-list field
@@ -98,6 +109,8 @@
 					initialize($html);
 
 					$list.append($html);
+
+					initializeMCE($html);
 				})
 
 				// Remove an item item on click
