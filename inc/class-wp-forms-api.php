@@ -523,10 +523,7 @@ class WP_Forms_API {
 				$element['#content'] = null;
 				$element['#label_position'] = 'after';
 
-				// $element['#value'] is likely a string, $element['#checked'] may be a boolean,
-				// as we are not concerned with the actual value, simply confirm that both keys'
-				// values are truthy
-				if ( $element['#value'] && $element['#checked'] ) {
+				if ( $element['#value'] === $element['#checked'] ) {
 					$attrs['checked'] = 'checked';
 				}
 
