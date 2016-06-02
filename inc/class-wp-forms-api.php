@@ -896,6 +896,11 @@ class WP_Forms_API {
 				foreach( $input[$element['#key']] as $item ) {
 					self::process_form( $element['#multiple'], $value, $item );
 					$values[$element['#key']][] = $value;
+
+					// Unset $value so it does not keep data from a previous iteration
+					// this caused all unchecked checkboxes following a checked input
+					// in a multiple field to store as checked on save.
+					unset( $value );
 				}
 			}
 		}
