@@ -523,7 +523,10 @@ class WP_Forms_API {
 				$element['#content'] = null;
 				$element['#label_position'] = 'after';
 
-				if ( $element['#value'] === $element['#checked'] ) {
+				// $element['#value'] is likely a string, $element['#checked'] may be a boolean,
+				// as we are not concerned with the actual value, simply confirm that both keys'
+				// values are truthy
+				if ( $element['#value'] && $element['#checked'] ) {
 					$attrs['checked'] = 'checked';
 				}
 
@@ -896,6 +899,11 @@ class WP_Forms_API {
 				foreach( $input[$element['#key']] as $item ) {
 					self::process_form( $element['#multiple'], $value, $item );
 					$values[$element['#key']][] = $value;
+
+					// Unset $value so it does not keep data from a previous iteration
+					// this caused all unchecked checkboxes following a checked input
+					// in a multiple field to store as checked on save.
+					unset( $value );
 				}
 			}
 		}
