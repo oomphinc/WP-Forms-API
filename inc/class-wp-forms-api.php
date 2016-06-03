@@ -878,7 +878,7 @@ class WP_Forms_API {
 		// Process checkbox by presence of #key, using the #checked value
 		// If not key is not set, set value to false
 		else if ( $element['#type'] === 'checkbox' ) {
-			$element['#value'] =  isset( $input[$element['#key']] ) ? $element['#checked'] : false;
+			$element['#value'] = isset( $input[$element['#key']] ) ? $element['#checked'] : false;
 		}
 		// Munge composite elements
 		else if( $element['#type'] == 'composite' ) {
