@@ -878,7 +878,7 @@ class WP_Forms_API {
 		// Process checkbox by presence of #key, using the #checked value
 		// If not key is not set or is empty, set value to false
 		else if ( $element['#type'] === 'checkbox' ) {
-			if ( isset( $input[$element['#key']] ) && !empty( $input[$element['#key']] ) ) {
+			if ( !empty( $input[$element['#key']] ) ) {
 				$element['#value'] = $element['#checked'];
 			} else {
 				$element['#value'] = false;
