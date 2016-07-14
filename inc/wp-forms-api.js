@@ -110,7 +110,14 @@
 			},
 
 			removeAttachment: function() {
-				this.model.clear();
+				// Don't clear the model entirely, just the set values
+				this.model.set({
+					id: null,
+					title: null,
+					link: null,
+					url: null,
+					editLink: null
+				});
 			},
 
 			initialize: function() {
