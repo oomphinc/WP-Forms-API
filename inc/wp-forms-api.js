@@ -136,10 +136,16 @@
 				var view = this,
 					$field = this.$el.find('.wp-form-attachment-id'),
 					attachmentId = $field.val(),
-					attachment = media.model.Attachment.get(attachmentId).clone();
+					attachment = media.model.Attachment.get(attachmentId).clone(),
+					inputName = view.model.get('input_name'),
+					inputType = view.model.get('input_type');
 
 				view.model.clear({ silent: true });
-				view.model.set({ id: attachmentId });
+				view.model.set({
+					id: attachmentId,
+					input_name: inputName,
+					input_type: inputType
+				});
 
 				$field.addClass('ui-dirty');
 
