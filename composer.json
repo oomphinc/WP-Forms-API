@@ -27,7 +27,7 @@
         "source": "https://github.com/oomphinc/WP-Forms-API"
     },
     "require": {
-        "php": "^5.4",
+        "php": ">=5.4",
         "oomphinc/composer-installers-extender": "^1.0"
     },
     "require-dev": {
