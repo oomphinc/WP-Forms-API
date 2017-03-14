@@ -74,6 +74,25 @@ class WP_Forms_API {
 		// Whether or not a value is required
 		'#required' => false,
 
+		// Validation schema for this element. A single, or array of:
+		//
+		// 1) Callables
+		// 2) Preg-compatible regular expression
+		// 3) An array with
+		//        '#validator' => $callable_or_regex,
+		//        '#invalid_message' => The message to use when this
+		//                              validator fails.
+		'#validators' => [],
+
+		// Validity state of this element.
+		'#valid' => true,
+
+		// The message to show after invalid values
+		'#invalid_message' => 'Invalid value',
+
+		// How many invalid elements were found in this form.
+		'#invalid_count' => 0,
+
 		// When #type=multiple, the index of this particular element in the set
 		'#index' => null,
 
@@ -688,6 +707,18 @@ class WP_Forms_API {
 			}
 		}
 
+		if( !$element['#valid'] ) ) {
+			$element['class'][] = 'wp-form-element-invalid';
+		}
+
+		if( $element['#validator'] ) {
+			// TODO: how to express this to markup so that it can be used in
+			// validation post-backs? Perhaps it's better to take the drupal approach
+			// and post the whole form, check output, and re-render it with validation
+			// messages.
+		}
+
+
 		$element = apply_filters( 'wp_form_element', $element );
 		$element = apply_filters( 'wp_form_element_key_' . $element['#key'], $element );
 
@@ -712,6 +743,11 @@ class WP_Forms_API {
 			$markup .= $element['#label_position'] == 'before' ? $label : '';
 			$markup .= self::make_tag( $element['#tag'], $element['#attrs'], $element['#content'] );
 			$markup .= $element['#label_position'] == 'after' ? $label : '';
+		}
+
+		// Add validation message if element value is not valid
+		if( !$element['#valid'] ) && $element['#invalid_message'] ) {
+			$markup .= self::make_tag( 'span', array( 'class' => 'wp-form-element-invalid-message' ), $element['#invalid_message'] );
 		}
 
 		if( $element['#description'] ) {
@@ -871,6 +907,9 @@ class WP_Forms_API {
 		$values_root = &$values;
 		$input_root = &$input;
 
+		// Assume every element is valid until proven otherwise
+		$element['#valid'] = true;
+
 		// Process button value by simple presence of #key
 		if( self::is_button( $element ) ) {
 			$element['#value'] = isset( $input[$element['#key']] ) && $input[$element['#key']];
@@ -921,11 +960,25 @@ class WP_Forms_API {
 			else if( isset( $element['#type'] ) && $element['#type'] != 'composite' ) {
 				$element['#value'] = sanitize_text_field( $element['#value'] );
 			}
+
+			// Validate element value and place result in #valid
+			if( !empty( $element['#validators'] ) ) {
+				if( is_callable( $element['#validator'] ) ) {
+					$validators = [ $element['#validator'] ];
+				}
+				else {
+					$validators = (array) $element['#validator'];
+				}
+
+				foreach( $validators as $validator ) {
+					$this->validate( $element, $validator );
+				}
+			}
 		}
 
 		// If there's a value, use it. May have been fed in as part of the form
 		// structure
-		if( isset( $element['#value'] ) ) {
+		if( isset( $element['#value'] ) && $element['#valid'] ) {
 			$values[$element['#key']] = $element['#value'];
 		}
 
@@ -933,6 +986,39 @@ class WP_Forms_API {
 
 		self::process_form( $element, $values_root, $input_root );
 	}
+
+	/**
+	 * Validate an element using a validator, which is a callback
+	 */
+	function validate( &$element, $validator ) {
+		if( is_callable( $validator ) ) {
+			$element['#valid'] = call_user_func( $validator, $element );
+		}
+		else if( is_array( $validator ) && isset( $validator['#validator'] ) ) {
+			// If it's more complex, recurse!
+			$this->validate( $element, $validator['#validator'] );
+
+			// And if not valid, set the message and bail
+			if( !$element['#valid'] ) {
+				$element['#invalid_message'] = $validator['#invalid_message'];
+				return;
+			}
+		}
+		else if( is_string( $validator ) ) {
+			// Assume it's a regular expression
+			$element['#valid'] = preg_match( $validator, $element );
+		}
+		else {
+			// Throw an exception? Log an error? Fail silently?
+		}
+
+		// STOP! In the name of ... invalidity!
+		if( !$element['#valid'] ) {
+			$element['#form']['#invalid_count']++;
+			return;
+		}
+	}
+
 
 	/**
 	 * Templates used in this module
