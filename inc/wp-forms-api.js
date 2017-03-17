@@ -13,6 +13,52 @@
 		},
 	});
 
+	var loadMCETemplates = function(content, editor) {
+		wp.ajax.post('wp_form_get_mce_templates', {
+			content: content
+		}).done(function(result) {
+			_.each(result, function(html, id) {
+				var $box = $('#' + id).parent();
+
+				$box.html(html);
+
+				if(editor) {
+					$box.find('.wp-editor-wrap').addClass(editor == 'html' ? 'html-active' : 'tmce-active');
+				}
+
+				var config = _.clone(tinyMCEPreInit.mceInit.wpfapiTemplate);
+
+				config.selector = id;
+				config.toolbar1 = ['bold', 'italic', 'underline', 'blockquote', 'strikethrough', 'bullist', 'numlist', 'alignleft', 'aligncenter', 'alignright', 'undo', 'redo', 'link', 'unlink'].join(',');
+				config.toolbar2 = config.toolbar3 = config.toolbar4 = '';
+				config.plugins = ['colorpicker', 'lists', 'fullscreen', 'image', 'wordpress', 'wpeditimage', 'wplink' ].join(',');
+				config.cache_suffix += '-' + id;
+
+				quicktags(id);
+
+				tinyMCEPreInit.mceInit[id] = config;
+
+				if(editor != 'html') {
+					tinymce.init(config);
+				}
+			});
+
+			QTags._buttonsInit();
+		});
+	}
+
+	// Any dynamically-inserted MCE containers
+	var initializeMCE = function(context) {
+		var request = {};
+
+		// Build up a query to get templates from AJAX
+		$(context).find('.wp-form-type-mce textarea').each(function() {
+			request[this.id] = this.value;
+		});
+
+		loadMCETemplates(request, 'html');
+	}
+
 	// Multiple-list field
 	var initializeMultiple = function(context) {
 		$(context).find('.wp-form-multiple').each(function() {
@@ -20,6 +66,7 @@
 			  , $list = $container.find('.wp-form-multiple-list')
 			  , $tmpl = $container.find('.wp-form-multiple-template')
 			;
+
 			// do not re-initialize
 			if ($container.data('initialized')) {
 				return;
@@ -62,6 +109,8 @@
 					initialize($html);
 
 					$list.append($html);
+
+					initializeMCE($html);
 				})
 
 				// Remove an item item on click
@@ -75,7 +124,7 @@
 				});
 
 			// prevent double init which would register multiple click handlers
-			$container.data('initialized',true);
+			$container.data('initialized', true);
 		});
 	}
 

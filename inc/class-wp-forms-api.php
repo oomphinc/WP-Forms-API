@@ -120,6 +120,8 @@ class WP_Forms_API {
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'admin_enqueue' ) );
 		add_action( 'wp_ajax_wp_form_search_posts', array( __CLASS__, 'search_posts' ) );
 		add_action( 'wp_ajax_wp_form_search_terms', array( __CLASS__, 'search_terms' ) );
+		add_action( 'wp_ajax_wp_form_get_mce_templates', array( __CLASS__, 'ajax_get_mce_templates' ) );
+
 		add_action( 'print_media_templates', array( __CLASS__, 'media_templates' ) );
 	}
 
@@ -352,10 +354,8 @@ class WP_Forms_API {
 				$element['#name'] = $form['#name'] . '[' . $form['#index'] . '][' . $key . ']';
 				$element['#slug'] = $form['#slug'] . '-' . $form['#index'] . '-' . $key;
 			}
-			else {
-				if( $form['#slug'] ) {
-					$element['#slug'] = $form['#slug'] . '-' . $element['#slug'];
-				}
+			else if( $form['#slug'] ) {
+				$element['#slug'] = $form['#slug'] . '-' . $element['#slug'];
 			}
 
 			if( $form['#type'] == 'composite' && $form['#name'] ) {
@@ -640,9 +640,21 @@ class WP_Forms_API {
 				$element['#id'] = 'wp-form-mce-' . $element['#slug'];
 				unset( $attrs['value'] );
 
-				ob_start();
-				wp_editor( $element['#value'], $element['#id'], array( 'textarea_name' => $element['#name'] ) );
-				$element['#content'] = ob_get_clean();
+				// Use a simple textarea if this is a template
+				if( $element['#form']['#template'] ) {
+					$element['#content'] = self::make_tag( 'textarea', array(
+						'id' => $element['#id'],
+						'name' => $element['#name'],
+					), $element['#value'] );
+
+					// Ensure scripts and styles are loaded for the editor
+					ob_start(); wp_editor( '', 'wpfapiTemplate' ); ob_end_clean();
+				}
+				else {
+					ob_start();
+					wp_editor( $element['#value'], $element['#id'], array( 'textarea_name' => $element['#name'] ) );
+					$element['#content'] = ob_get_clean();
+				}
 
 				break;
 
@@ -784,7 +796,6 @@ class WP_Forms_API {
 
 		// Placeholders filled in by JavaScript
 		$multiple['#index'] = '%INDEX%';
-		$multiple['#slug'] = $element['#slug'] . '-%INDEX%';
 
 		$item_classes = array( 'wp-form-multiple-item' );
 		$blank_values = array_fill_keys( array_keys( $element ), '' );
@@ -802,7 +813,7 @@ class WP_Forms_API {
 		// to ensure the correct order and grouping when the values come back out in PHP
 		$template = self::make_tag( 'li', array( 'class' => implode( ' ', $item_classes ) ),
 			$multiple_ui .
-			self::render_form( $multiple, $blank_values ) );
+			self::render_form( $multiple + array( '#template' => true ), $blank_values ) );
 
 		$markup = self::make_tag( 'script', array( 'type' => 'text/html', 'class' => 'wp-form-multiple-template' ), $template );
 
@@ -932,6 +943,30 @@ class WP_Forms_API {
 		$element = apply_filters_ref_array( 'wp_form_process_element', array( &$element, &$values, &$input ) );
 
 		self::process_form( $element, $values_root, $input_root );
+	}
+
+	/**
+	 * Get WP editor templates for dynamically-inserted editors in #multiple fields
+	 *
+	 * @action wp_ajax_wp_form_get_mce_templates
+	 */
+	function ajax_get_mce_templates() {
+		$results = array();
+		$bodies = filter_input( INPUT_POST, 'content', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY );
+
+		foreach ( $bodies as $id => $body ) {
+			ob_start();
+
+			wp_editor( $body, $id, array(
+				'textarea_name' => $id,
+				'textarea_rows' => preg_match_all( '/$/m', $body )
+			) );
+
+			// Strip out <link> tags since the proper styles will already have been loaded
+			$results[$id] = preg_replace( '/<link [^>]+>/i', '', ob_get_clean() );
+		}
+
+		wp_send_json_success( $results );
 	}
 
 	/**
